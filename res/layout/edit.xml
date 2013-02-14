@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/canvas_fullscreen"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff"
+    android:gravity="left"
+    android:orientation="vertical" android:layout_gravity="left">
+
+     <TextView
+         android:id="@+id/directions1"
+         android:layout_width="wrap_content"
+         android:layout_height="51dp"
+         android:text="Retrace the outline of a shape"
+         android:textAppearance="?android:attr/textAppearanceLarge"
+         android:textColor="#333333" />
+    
+    <GridView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/grid_retrace"
+        android:layout_width="wrap_content"
+        android:layout_height="297dp"
+        android:numColumns="5"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dp" >
+
+    </GridView>
+    
+    <TextView
+        android:id="@+id/directions2"
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
+        android:text="Take a New Photo and Video for a Shape:"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#333333" />
+
+    <GridView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/grid_new_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numColumns="5"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dp" >
+    </GridView>
+    
+    
+ 
+    
+  
+   
+
+</LinearLayout>

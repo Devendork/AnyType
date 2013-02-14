@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AnyType</string>
+    <string name="hello">Hello World, AnyType!</string>
+    <string name="drag">Drag letters from the top of the screen onto the canvas</string>
+    <string name="scale">Use two fingers to scale and rotate the letters on the canvas</string>
+	<string name="fling">Fling the letter to the left or right to delete</string>
+	<string name="longpress">Long press a letter to reveal the original photos</string>
+	<string name="saveletter">Save Letter</string>
+	<string name="backcanvas">Back to Canvas</string>
+
+
+</resources>

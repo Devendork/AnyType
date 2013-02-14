@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    		android:id="@+id/canvas_fullscreen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="left" android:background="#ffffff">      
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom|center_horizontal"
+        android:orientation="vertical"
+        android:background="#000000" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right" >
+
+            <Button
+                android:id="@+id/save_letter"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/saveletter" />
+
+            <Button
+                android:id="@+id/button_back"
+                style="?android:attr/buttonStyleSmall"        
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/backcanvas" />
+        </LinearLayout>
+
+        <GridView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/shape_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#ffffff"
+            android:drawSelectorOnTop="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:horizontalSpacing="6dp"
+            android:numColumns="5"
+            android:splitMotionEvents="true"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="6dp" >
+        </GridView>
+
+        <FrameLayout
+            android:id="@+id/letter_edit_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#ffffff">
+        </FrameLayout>
+
+    </LinearLayout>
+
+        </LinearLayout>
+
+  

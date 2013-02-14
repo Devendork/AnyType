@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/camera_fullscreen"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_vertical">
+
+  <FrameLayout
+    android:id="@+id/camera_preview"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+  </FrameLayout>
+
+  <ProgressBar
+      android:id="@+id/progress_bar"
+      style="?android:attr/progressBarStyleHorizontal"
+      android:layout_width="match_parent"
+      android:layout_height="40px" android:layout_gravity="bottom"/>
+
+   <FrameLayout
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content" 
+       android:layout_gravity="right|center_vertical" 
+       android:layout_marginRight="20dp">
+
+       <Button
+          android:id="@+id/button_capture"
+          android:layout_width="130dp"
+          android:layout_height="70dp"
+          android:text="Capture" 
+          android:background="#FF21B1"
+          android:textColor="#FFFFFF"
+         />
+       
+       
+         <SeekBar
+          android:id="@+id/seek"
+          android:layout_width="131dp"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="80dp" />
+   </FrameLayout>
+
+   
+  
+</FrameLayout>

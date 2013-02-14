@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id = "@+id/viewcapture_fullscreen"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical">
+
+  <FrameLayout
+      android:id="@+id/camera_preview"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" >
+  </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right|center_horizontal" android:layout_marginTop="60dp">
+
+	  	<LinearLayout
+	  	    android:layout_width="150dp"
+	  	    android:layout_height="wrap_content"
+	  	    android:orientation="vertical"
+	  	    android:paddingRight="20dp" android:layout_gravity="right|center_vertical">
+
+	  	    <Button
+	  	        android:id="@+id/button_accept"
+	  	        android:layout_width="match_parent"
+	  	        android:layout_height="70dp"
+	  	          android:background="#FF21B1"
+         		 android:textColor="#FFFFFF"
+	  	        android:text="Keep" android:layout_marginBottom="16dp" android:layout_marginLeft="4dp" android:layout_marginRight="4dp" android:layout_marginTop="4dp"/>
+
+	  	    <Button
+	  	        android:id="@+id/button_reject"
+	  	        android:layout_width="match_parent"
+	  	        android:layout_height="wrap_content"
+	  	        android:layout_margin="4dp"
+	  	        android:background="#333333"
+	  	        android:text="Retake" />
+
+	  	    <Button
+	  	        android:id="@+id/button_playback"
+	  	        android:layout_width="match_parent"
+	  	        android:layout_height="wrap_content"
+	  	        android:layout_margin="4dp"
+	  	        android:background="#333333"
+	  	        android:text="Replay Video" />
+
+	  	</LinearLayout>
+
+  		</FrameLayout>
+  
+</FrameLayout>

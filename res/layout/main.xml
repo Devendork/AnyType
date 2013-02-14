@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal" android:background="#ffffff" android:filterTouchesWhenObscured="false" android:gravity="center" android:layout_gravity="center">
+
+    <ImageView
+        android:id="@+id/ImageView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/anytype_home" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="left|center_vertical"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/ImageView02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="240dp"
+            android:layout_weight="0.20"
+            android:src="@drawable/anytype_contact" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal|center" >
+
+            <Button
+                android:id="@+id/button_new"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create New Photo Font" />
+
+            <Button
+                android:id="@+id/button_load"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Load Existing Font" />
+
+            <Button
+                android:id="@+id/button_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit Font" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

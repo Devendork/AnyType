@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/canvas_fullscreen"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" android:gravity="center">
+
+     <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right|center_vertical"
+            android:orientation="horizontal" >
+
+
+            <Button
+                android:id="@+id/button_reset"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start A New Font" />
+
+
+
+            <Button
+                android:id="@+id/button_save_font"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save Font" />
+
+            
+            <Button
+                android:id="@+id/button_email"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email This Canvas" />
+            
+           <Button
+                android:id="@+id/button_save_canvas"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Share Canvas" />
+            
+      </LinearLayout>
+    
+        <GridView
+            android:id="@+id/letter_grid"            
+            android:layout_width="fill_parent" 
+		    android:layout_height="60dp"
+		    android:numColumns="26"
+		    android:verticalSpacing="6dp"
+		    android:background="#ffffff"
+		    android:horizontalSpacing="6dp"
+		    android:stretchMode="columnWidth"
+		    android:gravity="center"
+		    android:drawSelectorOnTop="true"
+           android:focusableInTouchMode="true" />
+
+        <FrameLayout
+            android:id="@+id/canvas_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/instructions"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" 
+                android:gravity="center_vertical|center_horizontal">
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#333333"
+                    android:text="@string/drag"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/scale"
+                    android:textColor="#333333"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/fling"
+                    android:textColor="#333333"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/longpress"
+                    android:textColor="#333333"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </LinearLayout>
+
+        </FrameLayout>
+
+       
+</LinearLayout>
