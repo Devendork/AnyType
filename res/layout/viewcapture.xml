@@ -34,6 +34,15 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:text="No" />
+          
+          
+          <Button
+	  	        android:id="@+id/button_playback"
+	  	        android:layout_width="match_parent"
+	  	        android:layout_height="wrap_content"
+	  	        android:layout_margin="4dp"
+	  	        android:background="#333333"
+	  	        android:text="Replay Video" />
       
 
   			</LinearLayout>

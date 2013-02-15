@@ -76,6 +76,14 @@ class LetterView extends View {
 		this.letters = lv.getLetters();
 		this.cur = lv.getCur();
 		this.uid = lv.getUid();
+		
+		Iterator it = letters.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry me = (Map.Entry) it.next();
+			LetterInstance li = (LetterInstance) me.getValue();
+			if(!letter_images.containsKey(li.getId()))
+			letter_images.put(li.getId(), Globals.decodeSampledBitmapFromResource(li.getBitmapPath(), 600, 600));
+		}
 	}
 	
 
@@ -86,6 +94,9 @@ class LetterView extends View {
 	public HashMap<Integer, LetterInstance> getLetters(){
 		return letters;
 	}
+	
+	
+
 	
 	
 	public int  getUid(){

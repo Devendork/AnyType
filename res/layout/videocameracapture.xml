@@ -32,13 +32,13 @@
           android:background="#FF21B1"
           android:textColor="#FFFFFF"
          />
-       
-       
+
          <SeekBar
-          android:id="@+id/seek"
-          android:layout_width="131dp"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="80dp" />
+             android:id="@+id/seek"
+             android:layout_width="131dp"
+             android:layout_height="wrap_content"
+             android:layout_marginTop="80dp" />
+
    </FrameLayout>
 
    

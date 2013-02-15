@@ -27,70 +27,40 @@ package com.artfordorks.anytype;
  * to capture that shape
  */
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import com.artfordorks.data.*;
-import com.artfordorks.anytype.R.*;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.hardware.Camera;
-import android.hardware.Camera.Parameters;
-import android.hardware.Camera.PictureCallback;
-import android.hardware.Camera.Size;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.View.OnGenericMotionListener;
-import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.view.ViewGroup.LayoutParams;
-import android.view.inputmethod.EditorInfo;
+
+import com.artfordorks.anytype.R.id;
 
 
 
@@ -147,9 +117,9 @@ public class CanvasActivity extends Activity{
 	    public boolean onDoubleTap(MotionEvent e){
 	    	int selected = letter_view.locate((int) e.getX(), (int) e.getY());			
 	    	if (selected != -1){
-				launchLetterPartView(letter_view.getSelectedLetterId(selected));
+				//launchLetterPartView(letter_view.getSelectedLetterId(selected));
 	    		
-	    		//launchLetterEditor(letter_view.getCurLetterId());
+	    		launchLetterEditor(letter_view.getCurLetterId());
 	    		
 	    		letter_view.deselect(selected);	    		
 	    		return true;
@@ -270,6 +240,7 @@ public class CanvasActivity extends Activity{
 		if(Globals.saved_lv != null){
 			letter_view.loadState(Globals.saved_lv);
 			Globals.saved_lv = null;
+			
 		}
 		
 		Log.d("Canvas Call", "Ended Canvas");
@@ -310,7 +281,7 @@ public class CanvasActivity extends Activity{
 		
 	
 		LinearLayout ll = (LinearLayout) findViewById(R.id.instructions);
-		if(Globals.saved_lv != null) ll.setVisibility(View.INVISIBLE);
+		if(letter_view.hasLetters()) ll.setVisibility(View.INVISIBLE);
 	}
 	
 
@@ -495,7 +466,21 @@ public class CanvasActivity extends Activity{
 		LinearLayout ll = (LinearLayout) findViewById(R.id.instructions);
 		ll.setVisibility(View.INVISIBLE);
 
-    
+	}
+	
+	public void addToCanvas(int letter_id) {
+		double endTime = System.currentTimeMillis();
+		float x = letter_view.getWidth()/26 * letter_id;
+		double time = endTime - beginTime;
+		Globals.writeToLog(this, this.getLocalClassName(), "_AddLetter - "+Globals.intToChar(letter_id), time);
+		
+		letter_view.addLetter(letter_id);
+		letter_view.invalidate();
+		letter_view.updatePosition(x, 61f);	
+		
+		LinearLayout ll = (LinearLayout) findViewById(R.id.instructions);
+		ll.setVisibility(View.INVISIBLE);
+
 	}
 	
 	public void launchLetterPartView(int letter_id){

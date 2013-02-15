@@ -79,7 +79,11 @@ public class LoadFontActivity extends Activity {
             for (int i=0; i<children.length; i++) {
             	Button b = new Button(this);
                 String filename = children[i];
+                
+                if((!Globals.using_video && Globals.dirHasAFont(filename)) || (Globals.using_video && Globals.fontHasAnyVideos(filename))){
                 files.put(i, filename);
+                
+                
                 b.setId(i);
                 b.setText(filename);
                 b.setWidth(400);
@@ -113,6 +117,7 @@ public class LoadFontActivity extends Activity {
                 
                 list.addView(b, new LayoutParams(LayoutParams.WRAP_CONTENT,
         				LayoutParams.WRAP_CONTENT));
+                }
             }
         }
 		
@@ -141,6 +146,7 @@ public class LoadFontActivity extends Activity {
 		double endTime = System.currentTimeMillis();
 		double time = endTime - beginTime;
 		Globals.writeToLog(this, super.getLocalClassName(), "CanvasActivity - "+s, time);
+			
 		
 		Intent intent = new Intent(this, CanvasActivity.class);
 		startActivity(intent);

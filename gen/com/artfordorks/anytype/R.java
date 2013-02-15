@@ -31,15 +31,15 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class id {
         public static final int ImageView01=0x7f08001f;
         public static final int ImageView02=0x7f080020;
-        public static final int button_accept=0x7f080027;
+        public static final int button_accept=0x7f080028;
         public static final int button_back=0x7f080016;
         public static final int button_capture=0x7f080004;
-        public static final int button_edit=0x7f080023;
+        public static final int button_edit=0x7f080024;
         public static final int button_email=0x7f080009;
-        public static final int button_load=0x7f080022;
-        public static final int button_new=0x7f080021;
-        public static final int button_playback=0x7f080029;
-        public static final int button_reject=0x7f080028;
+        public static final int button_load=0x7f080023;
+        public static final int button_new=0x7f080022;
+        public static final int button_playback=0x7f08002a;
+        public static final int button_reject=0x7f080029;
         public static final int button_reset=0x7f080007;
         public static final int button_save_canvas=0x7f08000a;
         public static final int button_save_font=0x7f080008;
@@ -49,7 +49,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int canvas_fullscreen=0x7f080006;
         public static final int directions1=0x7f080011;
         public static final int directions2=0x7f080013;
-        public static final int frame_holder=0x7f080025;
+        public static final int frame_holder=0x7f080026;
         public static final int gallery=0x7f080019;
         public static final int grid_new_photo=0x7f080014;
         public static final int grid_retrace=0x7f080012;
@@ -60,7 +60,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int letter_grid=0x7f08000b;
         public static final int list=0x7f08001e;
         public static final int progress=0x7f080001;
-        public static final int progress_bar=0x7f080024;
+        public static final int progress_bar=0x7f080025;
         public static final int save_letter=0x7f080015;
         public static final int scrollView1=0x7f08001d;
         public static final int seek=0x7f080005;
@@ -69,8 +69,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int textView2=0x7f08000e;
         public static final int textView3=0x7f08000f;
         public static final int textView4=0x7f080010;
+        public static final int video_toggle=0x7f080021;
         public static final int video_viewer=0x7f08001c;
-        public static final int viewcapture_fullscreen=0x7f080026;
+        public static final int viewcapture_fullscreen=0x7f080027;
     }
     public static final class layout {
         public static final int buildletters=0x7f030000;

@@ -84,18 +84,6 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 		
 		sd = new ScaleGestureDetector(ViewCaptureActivity.this, new ScaleListener());
 
-		// Get current size of heap in bytes
-		long heapSize = Runtime.getRuntime().totalMemory();
-
-		// Get maximum size of heap in bytes. The heap cannot grow beyond this size.
-		// Any attempt will result in an OutOfMemoryException.
-		long heapMaxSize = Runtime.getRuntime().maxMemory();
-
-		// Get amount of free memory within the heap in bytes. This size will increase
-		// after garbage collection and decrease as new objects are created.
-		long heapFreeSize = Runtime.getRuntime().freeMemory();
-		
-		Log.d("Memory", "view capture "+heapSize +" "+heapMaxSize+" "+(float)heapSize/(float)heapMaxSize*100+" "+(float)heapFreeSize/(float)heapMaxSize*100);
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.viewcapture);
@@ -145,6 +133,18 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 			}
 		});
 		
+		Button playback = (Button) findViewById(id.button_playback);
+		if(Globals.using_video) playback.setVisibility(View.VISIBLE);
+		else playback.setVisibility(View.INVISIBLE);
+		playback.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// get an image from the camera
+				writeToLog("_view");
+				openVideoPlayer(); 
+			}
+		});
+		
 
 		// Create our Preview view and set it as the content of our activity.
 		shapeView = new DrawShapeOnTop(this, Globals.getStageShape(), true);
@@ -156,6 +156,11 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 
 	}
 	
+	public void openVideoPlayer(){
+		Intent intent = new Intent(this, VideoPlayerActivity.class);
+		startActivity(intent);
+	}
+	
 	public void nextEditScreen(boolean accepted){
 		Intent intent;
 		shapeView.recycleImages();
@@ -163,13 +168,17 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 		if(Globals.stage <= 4){
 			
 			if(accepted){
-
-				File pfile = new File(Globals.getStagePhotoPath(Globals.stage));
-				if(!pfile.exists()) intent = new Intent(this, CaptureActivity.class);
-				else  intent = new Intent(this, ViewCaptureActivity.class);
-	
+				File pfile;
+				pfile = new File(Globals.getStagePhotoPath(Globals.stage));
+				if(!pfile.exists()){
+					if(Globals.using_video) intent = new Intent(this, VideoCaptureActivity.class);
+					else intent = new Intent(this, PhotoCaptureActivity.class);
+				}
+				else intent = new Intent(this, ViewCaptureActivity.class);
+				
 			}else{
-				intent = new Intent(this, CaptureActivity.class);
+				if(Globals.using_video) intent = new Intent(this, VideoCaptureActivity.class);
+				else intent = new Intent(this, PhotoCaptureActivity.class);
 			}
 			startActivity(intent);
 			

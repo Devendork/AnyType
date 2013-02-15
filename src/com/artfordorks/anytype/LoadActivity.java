@@ -44,6 +44,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Switch;
 
 import com.artfordorks.anytype.R.id;
 import com.artfordorks.data.Letter;
@@ -308,26 +311,41 @@ public class LoadActivity extends Activity {
 		});
 		
 		button_edit.setVisibility(View.VISIBLE);
+		
+		
+		Switch video_switch = (Switch) findViewById(id.video_toggle);
+		video_switch.setChecked(Globals.using_video);
+		video_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				Globals.using_video = isChecked;
+			}
+		});
 
 		
 
 		
 
 	}
+
 	 
 	public void startNewFont(){
 		Globals.createNewDirectory(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+		Intent intent;
 		
 		double endTime = System.currentTimeMillis();
 		double time = endTime - beginTime;
 		Globals.writeToLog(this, this.getLocalClassName(), "CaptureActivity", time);
 		
-		Intent intent = new Intent(this, CaptureActivity.class);
+		if(Globals.using_video)  intent = new Intent(this, VideoCaptureActivity.class);
+		else  intent = new Intent(this, PhotoCaptureActivity.class);
 		startActivity(intent);
 	}
 	
 	
 	public void loadExistingFont(){
+		
 		double endTime = System.currentTimeMillis();
 		double time = endTime - beginTime;
 		Globals.writeToLog(this, this.getLocalClassName(), "LoadFontActivity", time);

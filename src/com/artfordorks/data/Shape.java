@@ -23,21 +23,19 @@ along with AnyTypePhoto. If not, see <http://www.gnu.org/licenses/>.
 
 package com.artfordorks.data;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import com.artfordorks.anytype.Globals;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.*;
-import android.graphics.Path.FillType;
+import android.graphics.Bitmap;
+import android.graphics.Path;
+import android.graphics.Rect;
 import android.media.MediaMetadataRetriever;
-import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 
 /**
@@ -161,5 +159,10 @@ public class Shape extends Activity{
 	public void setCustom(boolean b){
 		custom = b;
 	}
+	
+	
+		
+	
+	
 
 }

@@ -44,6 +44,7 @@ import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
+import android.media.MediaMetadataRetriever;
 import android.os.Environment;
 import android.util.Log;
 
@@ -103,7 +104,12 @@ public class Globals {
 	
 	static LetterView saved_lv = null;
 	static LetterEditView saved_lev = null;
-  
+	
+	
+	///VIDEO VARIABLES
+	static boolean using_video = false;
+	static int max_video_time = 5000;
+
 	
 
 	
@@ -388,93 +394,7 @@ public class Globals {
 		return true;
 	}
 	
-	public static int buildLetter(int i) {
-		
-		int w = letter_size; // this is based on 2 * the bounding box size
-		int h = letter_size;
-		int[] offset;
-		int[] shape_ids = letters[i].getShapeIds();
-		int[] x_points = letters[i].getXPoints();
-		int[] y_points = letters[i].getYPoints();
-		float[] rots = letters[i].getRotations();
-
-
-		
-		Log.d("Thead", "Make Letter "+intToChar(i));
-		
-		Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-		Canvas c = new Canvas(bitmap);
-
-		c.drawColor(Color.TRANSPARENT);
-
-		for (int j = 0; j < x_points.length; j++) {
-			
-			offset = shapes[shape_ids[j]].getOffset();
-			c.save();
-
-			c.translate(x_points[j] * Globals.shapeStretch, y_points[j]
-					* Globals.shapeStretch);
-			c.rotate((int) Math.toDegrees(rots[j]));
-			c.translate(offset[0] * Globals.shapeStretch, offset[1]
-					* Globals.shapeStretch);
-
-			File f = new File(getTestPath()
-					+ File.separator + "IMG_"
-					+ Integer.toString(shape_ids[j]) + "_CROP.png");
-			
-			Log.d("Thead", "File Exists "+f.exists()+ "Path: "+f.getPath());
-
-			
-			Bitmap bmap = Globals.decodeSampledBitmapFromResource(f,letter_size, letter_size);
-			c.drawBitmap(bmap, new Matrix(), null);
-			c.restore();
-			
-			bmap.recycle();
-
-		}
-		
-		x_points = null;
-		y_points = null;
-		rots = null;
-
-		try {
-
-			Bitmap out = Bitmap.createBitmap(bitmap, 0, 0, w, h,
-					new Matrix(), false);
-			File pictureFile = Globals.getOutputMediaFile(
-					MEDIA_TYPE_IMAGE, intToChar(i) + ".png");
-
-//					if (pictureFile == null) {
-//						return false;
-//					}
-
-			try {
-				FileOutputStream fos = new FileOutputStream(pictureFile);
-				out.compress(Bitmap.CompressFormat.PNG, 100, fos);
-				fos.close();
-			} catch (FileNotFoundException e) {
-				Log.d("Canvas", "File not found: " + e.getMessage());
-			} catch (IOException e) {
-				Log.d("Canvas",
-						"Error accessing file: " + e.getMessage());
-			}
-			out.recycle();
-
-		} catch (IllegalArgumentException e) {
-			Log.d("Canvas", "Illegal Arg" + e.getMessage());
-		}
-		
-		bitmap.recycle();
-
 	
-	
-		
-		System.gc();
-		
-		
-	
-		return (int) ((i+1)*((float)100/(float)26));
-	}
 	
 	
 
@@ -849,6 +769,100 @@ public class Globals {
 //	}
 //	
 //	
+	
+	public static boolean dirHasAFont(String path){
+		//just see if the first shape has a video, if it does they all will
+		String check_path = 	Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)+ File.separator + path + File.separator + "IMG_0.jpg";
+		File check_file = new File(check_path);
+		return check_file.exists();
+	}
+	
+	
+	///VIDEO FUNCTIONS
+	
+	public static String getStageVideoPath() {
+		if(playback_mode) return (getTestPath() + File.separator + "VID_" + Integer.toString(force_stage) + ".mp4");
+		else return (getTestPath() + File.separator + "VID_" + Integer.toString(stage) + ".mp4");
+	}
+	
+	public static String getStageVideoPath(int id) {
+		return (getTestPath() + File.separator + "VID_" + Integer.toString(id) + ".mp4");
+	}
+	
+	public static boolean fontHasAnyVideos(String path){
+		//just see if the first shape has a video, if it does they all will
+		String check_path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)+ File.separator +  path + File.separator + "VID_0.mp4";
+		File check_file = new File(check_path);
+		return check_file.exists();
+	}
+	
+//	public static void makeStageVideo(int stage_id){
+//		makeVideoFrames(stage_id);
+//		
+//	}
+	
+//	/*This makes video frames for this shape - gets passed the path to the video*/
+//	public static void makeVideoFrames(int id){
+//		String f = getStageVideoPath(id);
+//		
+//		long frames_per_second = 2l;
+//		long interval = 1000000l/frames_per_second; 
+//		
+//		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+//		mmr.setDataSource(f);
+//		
+//		String value = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+//		long video_length = Long.parseLong(value);  //this is the length of the video in milliseconds
+//		
+//		video_length *= 1000; //convert from milliseconds to microseconds
+//		
+//		String vid_width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+//		long v_width = Long.parseLong(vid_width);
+//
+//		String vid_height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+//		long v_height = Long.parseLong(vid_height);
+//		
+//		long count = 0;
+//		while(count <= video_length){
+//				
+//				try {
+//
+//				
+//				File pictureFile = Globals.getOutputMediaFile(
+//						Globals.MEDIA_TYPE_IMAGE, Globals.intToChar(id) + "_video_"+count+".png");
+//
+//
+//				try {
+//					FileOutputStream fos = new FileOutputStream(pictureFile);
+//					Bitmap out = mmr.getFrameAtTime(count, MediaMetadataRetriever.OPTION_CLOSEST);
+//					//out.compress(Bitmap.CompressFormat.PNG, 100, fos);
+//					fos.close();
+//					out.recycle();
+//
+//
+//				} catch (FileNotFoundException e) {
+//					Log.d("Canvas", "File not found: " + e.getMessage());
+//				} catch (IOException e) {
+//					Log.d("Canvas",
+//							"Error accessing file: " + e.getMessage());
+//				}
+//
+//			} catch (IllegalArgumentException e) {
+//				Log.d("Canvas", "Illegal Arg" + e.getMessage());
+//			}
+//			
+//			Log.d("Frames", "Saved Frame at "+count+" of vid length "+video_length);
+//			count += interval;
+//		}
+//		
+//
+//		
+//		
+//		
+//		
+//	}
+//	
+
 
 
 }
