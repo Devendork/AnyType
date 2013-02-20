@@ -23,10 +23,15 @@ along with AnyTypePhoto. If not, see <http://www.gnu.org/licenses/>.
 
 package com.artfordorks.anytype;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
+
+import com.artfordorks.data.Letter;
+import com.artfordorks.data.Shape;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -35,12 +40,13 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.util.Log;
 import android.view.View;
 
 
 /**
- * This class contains the view that draws an entire letter within the view
+ * This class contains the view that acts as the canvas on which individuals compose messages
  * @author lauradevendorf
  *
  */
@@ -50,21 +56,22 @@ class LetterView extends View {
 	private HashMap<Integer, Bitmap> letter_images;
 	private int cur;
 	private int uid = 0;
-	private int swidth;
-	private int sheight;
+	private VideoBuffer buffer;
+	private boolean playing = false;
+//	private Letter active_letter;
 	
 	
 
-	public LetterView(Context context, boolean video) {
+	public LetterView(Context context) {
 		super(context);
 		cur = -1;
 		letters = new HashMap();
 		letter_images = new HashMap();
-		this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-		
+		this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);		
 
 	}
 	
+
 	public boolean hasLetters(){
 		if(letters.size() == 0) return false;
 		return true;
@@ -106,9 +113,6 @@ class LetterView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		
-		swidth = this.getWidth();
-		sheight = this.getHeight();
-		
 		Iterator it = letters.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry me = (Map.Entry) it.next();
@@ -127,16 +131,75 @@ class LetterView extends View {
 				canvas.drawPath(path, p);
 			}
 			
-			m.preScale(0.5f, 0.5f);						
+			m.preScale(0.5f, 0.5f);			
+			
+			//draw the whole letter first
 			if(letter_images.get(li.getId()) != null) canvas.drawBitmap(letter_images.get(li.getId()), m, null);	
+			
+			//if there's video and the video has started playing and the buffer is ready - draw the shape image on top of the letter
+			if(Globals.using_video && playing ){
+				drawVideoFrame(canvas, m);
+				try {
+					Thread.sleep(1000l/Globals.frames_per_second, 0);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				invalidate();
+			}
+			
+			
 			
 		}
 		
 		super.onDraw(canvas);
 	}
+
 	
+	public void playLetterVideo(){
+		//make sure to cancel any currently playing video 
+		Log.d("Async", "Loading Video Buffer "+cur);
+
+		if(cur != -1){
+			LetterInstance li = letters.get(cur);
+			buffer = new VideoBuffer(this, Globals.letters[li.getId()]);
+			
+		}
+	}
 	
 
+	//ONLY DRAW THE VIDEO FRAME FOR THE ONE THAT IS PLAYING
+	public void drawVideoFrame(Canvas c, Matrix letter_matrix){
+		
+		//recycle the last frame
+		buffer.recycleLastFrame();
+		int shape_in_letter_id = buffer.getTopFrameShapeRelativeToLetter();
+		
+	
+		
+		int[] shape_ids = buffer.getLetter().getShapeIds();
+		int[] y_points = buffer.getLetter().getY_points();
+		int[] x_points = buffer.getLetter().getX_points();
+		float[] rots = buffer.getLetter().getRotations();
+
+		Shape s = Globals.getShape(shape_ids[shape_in_letter_id]);
+		int[] offset = s.getOffset();
+
+		c.save();
+		c.setMatrix(letter_matrix);
+		c.translate(x_points[shape_in_letter_id] * Globals.shapeStretch, y_points[shape_in_letter_id]
+				* Globals.shapeStretch);
+		c.rotate((int) Math.toDegrees(rots[shape_in_letter_id]));
+		c.translate(offset[0] * Globals.shapeStretch, offset[1]
+				* Globals.shapeStretch);
+		Bitmap bmap = buffer.getTopFrame();
+		
+		Matrix m = new Matrix();
+		m.preScale(Globals.shapeStretch, Globals.shapeStretch);
+		if(bmap != null) c.drawBitmap(bmap, m, null);
+		c.restore();
+				
+				
+	}
 	
 	
 	public int getCur(){
@@ -306,6 +369,15 @@ class LetterView extends View {
 
 		//end copy
 		return bitmap;
+	}
+
+
+	public void signalBeginVideo() {
+		if(!playing){
+			playing = true;
+			invalidate();
+		}
+		
 	}
 
 	

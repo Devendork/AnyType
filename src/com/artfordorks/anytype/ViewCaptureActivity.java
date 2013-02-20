@@ -110,8 +110,10 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 
 			   int stage = Globals.stage;
 			   saveImages(stage, shapeView.getShapeImageOut());      //this needs to execute before 
+			   BuildLettersThread bl_thread = new BuildLettersThread();
+			   bl_thread.execute(stage);
 			   
-			   Globals.buildLetters(stage); 
+			   //Globals.buildLetters(stage); 
 			   Globals.nextStage();
 				    
 			    if(Globals.edit) nextEditScreen(true);
@@ -275,7 +277,7 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 		Log.d("Thead", "Exit Save Images ");
 		
 		bmap.recycle();
-		
+				
 	}
 	
 

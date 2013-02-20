@@ -39,14 +39,17 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
 import android.media.MediaMetadataRetriever;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.GridView;
 
 import com.artfordorks.data.Letter;
 import com.artfordorks.data.Shape;
@@ -109,8 +112,10 @@ public class Globals {
 	///VIDEO VARIABLES
 	static boolean using_video = false;
 	static int max_video_time = 5000;
+	static long frames_per_second = 5l;
 
-	
+	///FOR THREADING TO UI
+	static GridView canvas_letter_grid;
 
 	
 	
@@ -796,72 +801,141 @@ public class Globals {
 		return check_file.exists();
 	}
 	
-//	public static void makeStageVideo(int stage_id){
-//		makeVideoFrames(stage_id);
-//		
-//	}
+	public static void makeStageVideo(int stage_id){
+		makeVideoFrames(stage_id);
+		
+	}
 	
-//	/*This makes video frames for this shape - gets passed the path to the video*/
-//	public static void makeVideoFrames(int id){
-//		String f = getStageVideoPath(id);
-//		
-//		long frames_per_second = 2l;
-//		long interval = 1000000l/frames_per_second; 
-//		
-//		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-//		mmr.setDataSource(f);
-//		
-//		String value = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//		long video_length = Long.parseLong(value);  //this is the length of the video in milliseconds
-//		
-//		video_length *= 1000; //convert from milliseconds to microseconds
-//		
+	/*This makes video frames for this shape - gets passed the path to the video*/
+	public static void makeVideoFrames(int id){
+		String f = getStageVideoPath(id);
+		
+		long interval = 1000000l/frames_per_second; 
+		
+		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+		mmr.setDataSource(f);
+		
+		String value = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+		long video_length = Long.parseLong(value);  //this is the length of the video in milliseconds
+		
+		video_length *= 1000; //convert from milliseconds to microseconds
+		
 //		String vid_width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
 //		long v_width = Long.parseLong(vid_width);
 //
 //		String vid_height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
 //		long v_height = Long.parseLong(vid_height);
 //		
-//		long count = 0;
-//		while(count <= video_length){
-//				
-//				try {
-//
-//				
-//				File pictureFile = Globals.getOutputMediaFile(
-//						Globals.MEDIA_TYPE_IMAGE, Globals.intToChar(id) + "_video_"+count+".png");
-//
-//
-//				try {
-//					FileOutputStream fos = new FileOutputStream(pictureFile);
-//					Bitmap out = mmr.getFrameAtTime(count, MediaMetadataRetriever.OPTION_CLOSEST);
-//					//out.compress(Bitmap.CompressFormat.PNG, 100, fos);
-//					fos.close();
-//					out.recycle();
-//
-//
-//				} catch (FileNotFoundException e) {
-//					Log.d("Canvas", "File not found: " + e.getMessage());
-//				} catch (IOException e) {
-//					Log.d("Canvas",
-//							"Error accessing file: " + e.getMessage());
-//				}
-//
-//			} catch (IllegalArgumentException e) {
-//				Log.d("Canvas", "Illegal Arg" + e.getMessage());
-//			}
-//			
-//			Log.d("Frames", "Saved Frame at "+count+" of vid length "+video_length);
-//			count += interval;
-//		}
 //		
-//
-//		
-//		
-//		
-//		
-//	}
-//	
+		long count = 0;
+		int index = 0;
+		
+		while(count <= video_length){
+				
+				try {
+
+				File pictureFile = Globals.getOutputMediaFile(
+						Globals.MEDIA_TYPE_IMAGE, Integer.toString(id) + "_video_"+index+".png");
+
+				Bitmap out = mmr.getFrameAtTime(count, MediaMetadataRetriever.OPTION_CLOSEST);
+				Bitmap crop_frame = cropFrameToShpae(id, out);
+				
+				
+				try {
+					FileOutputStream fos = new FileOutputStream(pictureFile);
+					crop_frame.compress(Bitmap.CompressFormat.PNG, 100, fos);
+					fos.close();
+					crop_frame.recycle();
+
+
+				} catch (FileNotFoundException e) {
+					Log.d("Canvas", "File not found: " + e.getMessage());
+				} catch (IOException e) {
+					Log.d("Canvas",
+							"Error accessing file: " + e.getMessage());
+				}
+
+			} catch (IllegalArgumentException e) {
+				Log.d("Canvas", "Illegal Arg" + e.getMessage());
+			}
+			
+			Log.d("Frames", "Saved Frame at "+count+" of vid length "+video_length);
+			count += interval;
+			index++;
+		}
+		
+		
+		shapes[id].setNumFrames(index);
+		mmr.release();
+		
+	}
+	
+	private static Bitmap cropFrameToShpae(int stage_id, Bitmap frame) {
+
+		//get the pixels from the current screen
+		Bitmap  bitmap = Bitmap.createBitmap(Globals.preview_size.x, Globals.preview_size.y, Bitmap.Config.ARGB_8888);
+		Canvas  c = new Canvas(bitmap);
+		Bitmap out;
+		Point ctrAt = new Point();
+		
+
+		Path path = new Path(shapes[stage_id].getPath());		
+
+
+		//compute the bounds for the base path
+		RectF pathBounds = new RectF();
+		path.computeBounds(pathBounds, true);
+
+		//this is only relative to the original path
+		ctrAt.set((int)(preview_size.x-pathBounds.width())/2, (int)(preview_size.y-pathBounds.height())/2 + 15);
+
+		//offset by bounds
+		try {
+			path.offset(ctrAt.x, ctrAt.y);
+		} catch (Exception e) {
+			Log.d("Offset", e.getMessage());
+		}
+		
+		path.computeBounds(pathBounds, true);
+
+		c.drawColor(Color.TRANSPARENT);
+		c.clipPath(path);
+		c.drawBitmap(frame, null,new Rect(0, 0, Globals.preview_size.x, Globals.preview_size.y), null);			
+		
+		//create a cropped version of the bitmap
+		try{
+			out = Bitmap.createBitmap(bitmap,(int)pathBounds.left, (int)pathBounds.top, (int) pathBounds.width()+2, (int) pathBounds.height()+2, new Matrix(), false);
+		}catch(IllegalArgumentException e){
+			out = null;
+			Log.d("Get Screen Bitmap", e.getMessage());
+		}
+		
+		frame.recycle();
+		bitmap.recycle();
+		
+		System.gc();
+		return out;		
+	}
+
+	
+	static void calcNumFrames(){
+		File pictureFile;
+		for(int i = 0; i< shapes.length; i++){
+			int count = -1;
+			
+			do{
+			 count++;
+			 pictureFile = Globals.getOutputMediaFile(
+					Globals.MEDIA_TYPE_IMAGE, Integer.toString(i) + "_video_"+count+".png");
+			}while(pictureFile.exists());
+			
+			shapes[i].setNumFrames(count);
+		}
+	}
+
+
+	
+	
 
 
 

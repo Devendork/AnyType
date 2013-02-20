@@ -146,7 +146,10 @@ public class LoadFontActivity extends Activity {
 		double endTime = System.currentTimeMillis();
 		double time = endTime - beginTime;
 		Globals.writeToLog(this, super.getLocalClassName(), "CanvasActivity - "+s, time);
-			
+		
+		//populate fields for things that need values 
+		if(Globals.using_video) Globals.calcNumFrames();
+		
 		
 		Intent intent = new Intent(this, CanvasActivity.class);
 		startActivity(intent);

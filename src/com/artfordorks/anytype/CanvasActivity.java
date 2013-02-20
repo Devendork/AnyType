@@ -66,7 +66,7 @@ import com.artfordorks.anytype.R.id;
 
 public class CanvasActivity extends Activity{
 
-	private GridView letter_grid;
+	//private GridView letter_grid;
 	private LetterView letter_view;
 	private boolean two_finger = false;
 	private int savedNum = 0;
@@ -119,9 +119,15 @@ public class CanvasActivity extends Activity{
 	    	if (selected != -1){
 				//launchLetterPartView(letter_view.getSelectedLetterId(selected));
 	    		
-	    		launchLetterEditor(letter_view.getCurLetterId());
+	    		//launchLetterEditor(letter_view.getCurLetterId());
 	    		
-	    		letter_view.deselect(selected);	    		
+	    		if(Globals.using_video){
+	    			Log.d("Async", "Selected Play Video "+selected);
+	    			letter_view.select(selected);
+	    			letter_view.playLetterVideo(); 
+	    		}
+	    		
+	    		//letter_view.deselect(selected);	    		
 	    		return true;
 
 			}
@@ -172,12 +178,12 @@ public class CanvasActivity extends Activity{
 		gd = new GestureDetector(CanvasActivity.this, new GestureListener(), new Handler());
 		sd = new ScaleGestureDetector(CanvasActivity.this, new ScaleListener());
 		
-		Log.d("Canvas Call", "Find Grid View");
-		letter_grid = (GridView) findViewById(R.id.letter_grid);
-		letter_grid.setAdapter(new LetterAdapter(this));
+		Globals.canvas_letter_grid = (GridView) findViewById(R.id.letter_grid);
+		Globals.canvas_letter_grid.setAdapter(new LetterAdapter(this));
 
+		
 
-		letter_view = new LetterView(this, false);
+		letter_view = new LetterView(this);
 		letter_view.setClickable(true);
 		FrameLayout canvas = (FrameLayout) findViewById(R.id.canvas_frame);
 		canvas.addView(letter_view, new LayoutParams(LayoutParams.WRAP_CONTENT,
@@ -494,7 +500,7 @@ public class CanvasActivity extends Activity{
 		Globals.writeToLog(this, this.getLocalClassName(), "LetterVideoPlayerActivity", time);
 		
 		
-		Intent intent = new Intent(this, LetterVideoPlayerActivity.class);
+		Intent intent = new Intent(this, LetterPartViewerActivity.class);
 		startActivity(intent);
 	}
 	

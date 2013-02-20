@@ -54,6 +54,8 @@ public class Shape extends Activity{
 	private Rect 	bounds;
 	private int[]   offset; //the amount this shape was shifted from zero
 	private boolean custom;
+	
+	private int num_frames = 0;
 
 
 
@@ -68,6 +70,13 @@ public class Shape extends Activity{
 		custom = false;
 	}
 	
+	public int getNumFrames(){
+		return num_frames;
+	}
+	
+	public void setNumFrames(int n){
+		 num_frames = n;
+	}
 	
 	
 

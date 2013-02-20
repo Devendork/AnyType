@@ -69,7 +69,7 @@
         </activity>
         
          <activity
-            android:name=".LetterVideoPlayerActivity"
+            android:name=".LetterPartViewerActivity"
             android:screenOrientation="landscape">
              
         </activity>
