@@ -108,12 +108,12 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 			@Override
 			public void onClick(View v) {
 
-			   int stage = Globals.stage;
-			   saveImages(stage, shapeView.getShapeImageOut());      //this needs to execute before 
-			   BuildLettersThread bl_thread = new BuildLettersThread();
-			   bl_thread.execute(stage);
+			  // saveImages(stage, shapeView.getShapeImageOut());      //this needs to execute before 
 			   
-			   //Globals.buildLetters(stage); 
+			   BuildLettersThread bl_thread = new BuildLettersThread();
+			   
+			   bl_thread.execute(Globals.stage, shapeView.getShapeImageOut());
+			   
 			   Globals.nextStage();
 				    
 			    if(Globals.edit) nextEditScreen(true);
@@ -185,8 +185,11 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 			startActivity(intent);
 			
 		}else{
-		    intent = new Intent(this, CanvasActivity.class);
-			startActivity(intent);
+		    
+			Log.d("Async", "Builder Threads "+Globals.builder_threads);
+			if(Globals.builder_threads == 0) intent = new Intent(this, CanvasActivity.class);
+			else intent = new Intent(this, ProgressActivity.class);
+		    startActivity(intent);
 		}
 	}
 
@@ -195,7 +198,10 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 
 		if(Globals.stage == 5){
 			Intent intent;
-		    intent = new Intent(this, CanvasActivity.class);
+			Log.d("Async", "Builder Threads "+Globals.builder_threads);
+			if(Globals.builder_threads == 0) intent = new Intent(this, CanvasActivity.class);
+			else intent = new Intent(this, ProgressActivity.class);
+		    startActivity(intent);
 			startActivity(intent);
 		}else finish();
 
@@ -253,32 +259,32 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 
 	}
 	
-	public void saveImages(int stage, Bitmap bmap){
-		Log.d("Thead", "Enter Save Images "+stage+" && bitmap "+bmap);
-
-		
-		File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "IMG_" + Integer.toString(stage) + "_CROP.png");
-		if (pictureFile == null) return;
-
-
-		try {
-			FileOutputStream fos = new FileOutputStream(pictureFile);
-			bmap.compress(Bitmap.CompressFormat.PNG, 60, fos);
-			fos.close();
-			Log.d("Capture Activity", "File Created");
-		
-		} catch (FileNotFoundException e) {
-			Log.d("Thead", "File not found: " + e.getMessage());
-		} catch (IOException e) {
-			Log.d("Thead", "Error accessing file: " + e.getMessage());
-		}
-		
-		Log.d("Thead", "File Exists "+pictureFile.exists()+ "Path:"+pictureFile.getPath());
-		Log.d("Thead", "Exit Save Images ");
-		
-		bmap.recycle();
-				
-	}
+//	public void saveImages(int stage, Bitmap bmap){
+//		Log.d("Thead", "Enter Save Images "+stage+" && bitmap "+bmap);
+//
+//		
+//		File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "IMG_" + Integer.toString(stage) + "_CROP.png");
+//		if (pictureFile == null) return;
+//
+//
+//		try {
+//			FileOutputStream fos = new FileOutputStream(pictureFile);
+//			bmap.compress(Bitmap.CompressFormat.PNG, 60, fos);
+//			fos.close();
+//			Log.d("Capture Activity", "File Created");
+//		
+//		} catch (FileNotFoundException e) {
+//			Log.d("Thead", "File not found: " + e.getMessage());
+//		} catch (IOException e) {
+//			Log.d("Thead", "Error accessing file: " + e.getMessage());
+//		}
+//		
+//		Log.d("Thead", "File Exists "+pictureFile.exists()+ "Path:"+pictureFile.getPath());
+//		Log.d("Thead", "Exit Save Images ");
+//		
+//		bmap.recycle();
+//				
+//	}
 	
 
 

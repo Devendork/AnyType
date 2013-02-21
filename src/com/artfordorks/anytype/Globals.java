@@ -49,7 +49,7 @@ import android.hardware.Camera.Size;
 import android.media.MediaMetadataRetriever;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import com.artfordorks.data.Letter;
 import com.artfordorks.data.Shape;
@@ -112,10 +112,12 @@ public class Globals {
 	///VIDEO VARIABLES
 	static boolean using_video = false;
 	static int max_video_time = 5000;
-	static long frames_per_second = 5l;
+	static int frames_per_second = 5;
+	static int buffer_depth = 5;
 
 	///FOR THREADING TO UI
-	static GridView canvas_letter_grid;
+	static ThreadProgressView progress = null;
+	static int builder_threads = 0;
 
 	
 	
@@ -698,14 +700,7 @@ public class Globals {
 	        o2.inScaled = false;
 	       // o2.inDensity = (int)Globals.screen_density;
 	        o2.inSampleSize=scale;
-	        
-	        
-	       
-	        Log.d("Density", "Screen"+Globals.screen_density);
-	        Log.d("Density", "In Density"+o2.inDensity);
-	        Log.d("Density", "Target Density"+o2.inTargetDensity);
-			
-	        
+	          
 	        return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
 	    } catch (FileNotFoundException e) {}
 	    return null;	  
@@ -810,7 +805,7 @@ public class Globals {
 	public static void makeVideoFrames(int id){
 		String f = getStageVideoPath(id);
 		
-		long interval = 1000000l/frames_per_second; 
+		long interval = 1000000l/(long)frames_per_second; 
 		
 		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 		mmr.setDataSource(f);
@@ -819,14 +814,7 @@ public class Globals {
 		long video_length = Long.parseLong(value);  //this is the length of the video in milliseconds
 		
 		video_length *= 1000; //convert from milliseconds to microseconds
-		
-//		String vid_width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
-//		long v_width = Long.parseLong(vid_width);
-//
-//		String vid_height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
-//		long v_height = Long.parseLong(vid_height);
-//		
-//		
+				
 		long count = 0;
 		int index = 0;
 		
@@ -882,6 +870,15 @@ public class Globals {
 		Path path = new Path(shapes[stage_id].getPath());		
 
 
+		try {
+			Matrix m = new Matrix();
+			//m.setScale(Globals.shapeStretch, Globals.shapeStretch);
+			m.setScale(shapeStretch, shapeStretch);
+			path.transform(m);
+		} catch (Exception e) {
+			Log.d("Offset", "Matrix " + e.getMessage());
+		}
+		
 		//compute the bounds for the base path
 		RectF pathBounds = new RectF();
 		path.computeBounds(pathBounds, true);

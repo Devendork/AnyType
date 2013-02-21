@@ -66,12 +66,12 @@ import com.artfordorks.anytype.R.id;
 
 public class CanvasActivity extends Activity{
 
-	//private GridView letter_grid;
 	private LetterView letter_view;
 	private boolean two_finger = false;
 	private int savedNum = 0;
 	private GestureDetector gd;
 	private ScaleGestureDetector sd;
+	private GridView canvas_letter_grid;
 	
 	private double beginTime = System.currentTimeMillis();
 
@@ -106,8 +106,10 @@ public class CanvasActivity extends Activity{
 	    public void onLongPress(MotionEvent e){
 	    	int selected = letter_view.locate((int) e.getX(), (int) e.getY());			
 	    	if (selected != -1){
-				launchLetterPartView(letter_view.getCurLetterId());
 	    		
+	    		//no matter what is pressed - stop the currently playing video
+	    		if(Globals.using_video) letter_view.stopLetterVideo();
+				launchLetterPartView(letter_view.getCurLetterId());
 	    		//launchLetterEditor(letter_view.getCurLetterId());
 	    		
 	    		letter_view.deselect(selected);
@@ -122,9 +124,18 @@ public class CanvasActivity extends Activity{
 	    		//launchLetterEditor(letter_view.getCurLetterId());
 	    		
 	    		if(Globals.using_video){
-	    			Log.d("Async", "Selected Play Video "+selected);
-	    			letter_view.select(selected);
-	    			letter_view.playLetterVideo(); 
+	    			boolean same_letter = letter_view.isPlaying(selected);
+	    			
+	    			
+    				letter_view.stopLetterVideo();
+
+	    			//if the letter that was tapped is different, select the new video
+	    			if(!same_letter){
+	    				//if a new letter is selected for playing, stop the original video first
+	    				Log.d("Async", "Selected Play Video "+selected);
+	    				letter_view.select(selected);
+	    				letter_view.playLetterVideo(); 
+	    			}
 	    		}
 	    		
 	    		//letter_view.deselect(selected);	    		
@@ -134,8 +145,7 @@ public class CanvasActivity extends Activity{
     		return false;
 
 	    }
-	    
-	    
+	    	    
 	    @Override
 	    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 	        try {
@@ -143,7 +153,10 @@ public class CanvasActivity extends Activity{
 	                return false;
 	            if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY || 
 	            		(e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY)) {
-	                letter_view.removeCurrentLetter();
+	                
+
+	            	
+	            	letter_view.removeCurrentLetter(); //this handles stopping the video
 	                
 	        		LinearLayout ll = (LinearLayout) findViewById(R.id.instructions);
 	        		
@@ -168,18 +181,15 @@ public class CanvasActivity extends Activity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d("Canvas Call", "Entered ON Create");
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
-		Log.d("Canvas Call", "Set Content View");
 		setContentView(R.layout.canvas);
 		
 		gd = new GestureDetector(CanvasActivity.this, new GestureListener(), new Handler());
 		sd = new ScaleGestureDetector(CanvasActivity.this, new ScaleListener());
 		
-		Globals.canvas_letter_grid = (GridView) findViewById(R.id.letter_grid);
-		Globals.canvas_letter_grid.setAdapter(new LetterAdapter(this));
+		canvas_letter_grid = (GridView) findViewById(R.id.letter_grid);
+		canvas_letter_grid.setAdapter(new LetterAdapter(this));
 
 		
 
@@ -188,9 +198,6 @@ public class CanvasActivity extends Activity{
 		FrameLayout canvas = (FrameLayout) findViewById(R.id.canvas_frame);
 		canvas.addView(letter_view, new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT));
-		//letter_view.setOnTouchListener(this);
-		
-				
 		
 		letter_view.setOnTouchListener(new OnTouchListener() {
 	        @Override
@@ -245,11 +252,9 @@ public class CanvasActivity extends Activity{
 		
 		if(Globals.saved_lv != null){
 			letter_view.loadState(Globals.saved_lv);
-			Globals.saved_lv = null;
-			
+			Globals.saved_lv = null;	
 		}
 		
-		Log.d("Canvas Call", "Ended Canvas");
 
 		Button saveButton = (Button) findViewById(id.button_save_canvas);
 		saveButton.setOnClickListener(new View.OnClickListener() {
@@ -285,7 +290,6 @@ public class CanvasActivity extends Activity{
 			}
 		});
 		
-	
 		LinearLayout ll = (LinearLayout) findViewById(R.id.instructions);
 		if(letter_view.hasLetters()) ll.setVisibility(View.INVISIBLE);
 	}
@@ -304,12 +308,8 @@ public class CanvasActivity extends Activity{
 		  
 		String aEmailBCCList[] = { ""};  
 		emailIntent.setType("plain/text");  
-
-//		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, aEmailList);  
 		emailIntent.putExtra(android.content.Intent.EXTRA_BCC, aEmailBCCList);  
-		  
 		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "A Typeface For You");  
-		
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "See image attached.");  
 
 		
@@ -325,9 +325,7 @@ public class CanvasActivity extends Activity{
 		double endTime = System.currentTimeMillis();
 		double time = endTime - beginTime;
 		Globals.writeToLog(this, this.getLocalClassName(), "_Email", time);
-		
-			
-		  
+
 		startActivity(emailIntent);
 	}
 	
@@ -345,7 +343,6 @@ public class CanvasActivity extends Activity{
 		final EditText input = new EditText(this);
 		alert.setView(input);
 
-		
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int whichButton) {
 		  String value = input.getText().toString();
@@ -396,11 +393,8 @@ public class CanvasActivity extends Activity{
 		alert.show();
 	}
 	
-
-
 	@Override
 	protected void onPause() {
-		Log.d("Delete Mode", "On Pause Called");
 		saveCanvasState();
 		super.onPause();
 	}
@@ -409,7 +403,6 @@ public class CanvasActivity extends Activity{
 		Globals.saved_lv = letter_view;
 	}
 	
-
 	private File saveScreen(String name){
 		
 		double endTime = System.currentTimeMillis();
@@ -457,8 +450,6 @@ public class CanvasActivity extends Activity{
 		startActivity(intent);
 	}
 	
-
-
 	public void addToCanvas(ImageView v, MotionEvent e) {
 		float x = (letter_view.getWidth()/26*v.getId())+e.getX();
 		double endTime = System.currentTimeMillis();
@@ -474,23 +465,7 @@ public class CanvasActivity extends Activity{
 
 	}
 	
-	public void addToCanvas(int letter_id) {
-		double endTime = System.currentTimeMillis();
-		float x = letter_view.getWidth()/26 * letter_id;
-		double time = endTime - beginTime;
-		Globals.writeToLog(this, this.getLocalClassName(), "_AddLetter - "+Globals.intToChar(letter_id), time);
-		
-		letter_view.addLetter(letter_id);
-		letter_view.invalidate();
-		letter_view.updatePosition(x, 61f);	
-		
-		LinearLayout ll = (LinearLayout) findViewById(R.id.instructions);
-		ll.setVisibility(View.INVISIBLE);
-
-	}
-	
 	public void launchLetterPartView(int letter_id){
-		Log.d("Delete", "Setting Force Letter to "+letter_id);
 		Globals.force_letter = letter_id;
 		
 		saveCanvasState();
@@ -505,7 +480,6 @@ public class CanvasActivity extends Activity{
 	}
 	
 	public void launchLetterEditor(int letter_id){
-		Log.d("Delete", "Setting Force Letter to "+letter_id);
 		Globals.force_letter = letter_id;
 		
 		saveCanvasState();
@@ -518,6 +492,8 @@ public class CanvasActivity extends Activity{
 		Intent intent = new Intent(this, LetterEditActivity.class);
 		startActivity(intent);
 	}
+	
+
 	
 	
 

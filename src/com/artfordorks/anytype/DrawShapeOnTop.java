@@ -186,7 +186,6 @@ class DrawShapeOnTop extends View {
 	public Bitmap getShapeImageOut(){
 
 
-					
 		//get the pixels from the current screen
 		Bitmap  bitmap = Bitmap.createBitmap(Globals.preview_size.x, Globals.preview_size.y, Bitmap.Config.ARGB_8888);
 		Canvas  c = new Canvas(bitmap);

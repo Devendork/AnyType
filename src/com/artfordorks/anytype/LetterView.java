@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.artfordorks.data.Letter;
 import com.artfordorks.data.Shape;
@@ -41,6 +43,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 
@@ -56,18 +59,32 @@ class LetterView extends View {
 	private HashMap<Integer, Bitmap> letter_images;
 	private int cur;
 	private int uid = 0;
+	
 	private VideoBuffer buffer;
 	private boolean playing = false;
-//	private Letter active_letter;
-	
-	
+	private Handler handler = new Handler();
+	private boolean next_frame = false;
+	private final long frame_delay = 1000l / (long)Globals.frames_per_second;
+
 
 	public LetterView(Context context) {
 		super(context);
 		cur = -1;
 		letters = new HashMap();
 		letter_images = new HashMap();
-		this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);		
+		this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);	
+		
+		//set a background timer that just keeps running
+		handler = new Handler();
+		handler.postDelayed(new Runnable(){
+			@Override
+			public void run() {
+				next_frame = true;
+				invalidate();
+				handler.postDelayed(this, frame_delay);				
+			}
+			
+		}, frame_delay);
 
 	}
 	
@@ -116,6 +133,7 @@ class LetterView extends View {
 		Iterator it = letters.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry me = (Map.Entry) it.next();
+			Integer uid = (Integer) me.getKey();
 			LetterInstance li = (LetterInstance) me.getValue();
 			
 					
@@ -136,15 +154,9 @@ class LetterView extends View {
 			//draw the whole letter first
 			if(letter_images.get(li.getId()) != null) canvas.drawBitmap(letter_images.get(li.getId()), m, null);	
 			
-			//if there's video and the video has started playing and the buffer is ready - draw the shape image on top of the letter
-			if(Globals.using_video && playing ){
+			//if there's video and the video has started playing and the shape is the one we want - draw the shape image on top of the letter
+			if(Globals.using_video && playing && uid == buffer.getUniqueId()){
 				drawVideoFrame(canvas, m);
-				try {
-					Thread.sleep(1000l/Globals.frames_per_second, 0);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				invalidate();
 			}
 			
 			
@@ -153,29 +165,58 @@ class LetterView extends View {
 		
 		super.onDraw(canvas);
 	}
+	
+	
 
+	
+	public void stopLetterVideo(){
+		playing = false;
+		
+		if(buffer != null){
+			buffer.clearBuffer();
+			buffer = null;
+		}
+	}
 	
 	public void playLetterVideo(){
 		//make sure to cancel any currently playing video 
 		Log.d("Async", "Loading Video Buffer "+cur);
 
 		if(cur != -1){
+			//check to see if something is playing and hasn't been stopped
+			if(buffer != null) stopLetterVideo(); 
+			
 			LetterInstance li = letters.get(cur);
-			buffer = new VideoBuffer(this, Globals.letters[li.getId()]);
+			buffer = new VideoBuffer(cur, this, Globals.letters[li.getId()]);
 			
 		}
+	}
+	
+	//tells you if the interface is playing and that it's the currently selected letter that is playing
+	public boolean isPlaying(int selected){
+		if(!playing) return false;
+
+		//is the the same letter_instance that's playing?
+		if(buffer != null && selected == buffer.getUniqueId()) return true;
+		
+		return false;
 	}
 	
 
 	//ONLY DRAW THE VIDEO FRAME FOR THE ONE THAT IS PLAYING
 	public void drawVideoFrame(Canvas c, Matrix letter_matrix){
 		
-		//recycle the last frame
-		buffer.recycleLastFrame();
-		int shape_in_letter_id = buffer.getTopFrameShapeRelativeToLetter();
-		
+
+		//next_frame will be flagged to true every x milliseconds to animate the view
+		if(next_frame){
+			buffer.recycleLastFrame();
+			next_frame = false;
+		}
 	
-		
+		int shape_in_letter_id = buffer.getTopFrameShapeRelativeToLetter();
+		Bitmap bmap = buffer.getTopFrame();
+
+		if(bmap != null){
 		int[] shape_ids = buffer.getLetter().getShapeIds();
 		int[] y_points = buffer.getLetter().getY_points();
 		int[] x_points = buffer.getLetter().getX_points();
@@ -191,12 +232,11 @@ class LetterView extends View {
 		c.rotate((int) Math.toDegrees(rots[shape_in_letter_id]));
 		c.translate(offset[0] * Globals.shapeStretch, offset[1]
 				* Globals.shapeStretch);
-		Bitmap bmap = buffer.getTopFrame();
 		
 		Matrix m = new Matrix();
-		m.preScale(Globals.shapeStretch, Globals.shapeStretch);
-		if(bmap != null) c.drawBitmap(bmap, m, null);
+		c.drawBitmap(bmap, m, null);
 		c.restore();
+		}
 				
 				
 	}
@@ -218,6 +258,7 @@ class LetterView extends View {
 	
 	/*
 	 * Finds all the letters containing the point and returns the smallest letter contained.  
+	 * returns the unqiue id of the letter that was found
 	 */
 	public int locate(int x, int y){
 		ArrayList<Map.Entry> found = new ArrayList();
@@ -260,7 +301,6 @@ class LetterView extends View {
 		}
 		
 	}
-	
 
 	
 	public void deselect(int id){
@@ -277,6 +317,9 @@ class LetterView extends View {
 		if(letters.containsKey(cur)){
 			LetterInstance li = letters.get(cur);
 			letters.remove(cur);
+			
+			//if we're removing something that's video is playing, make sure we stop the video
+			if(buffer != null && buffer.getUniqueId() == cur) stopLetterVideo();
 			
 			//if this was the only instance of a letter, also delete it from images
 			int num_letter_id = 0;
@@ -371,13 +414,11 @@ class LetterView extends View {
 		return bitmap;
 	}
 
-
+	//it only sets to true after the buffer says it's okay
 	public void signalBeginVideo() {
 		if(!playing){
 			playing = true;
-			invalidate();
-		}
-		
+		 }			
 	}
 
 	

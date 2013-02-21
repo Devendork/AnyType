@@ -69,31 +69,27 @@ import android.widget.ImageView;
 class LoadAnimationFrameThread extends AsyncTask<File, Void, Bitmap> {
     private final WeakReference<VideoBuffer> videoBufferReference;
     private File data_file = null;
-    private int index;
 
-    public LoadAnimationFrameThread(VideoBuffer vb, int id) {
+    public LoadAnimationFrameThread(VideoBuffer vb) {
         // Use a WeakReference to ensure the ImageView can be garbage collected
     	videoBufferReference = new WeakReference<VideoBuffer>(vb);
-    	index = id;
     }
 
     // Decode image in background.
     @Override
     protected Bitmap doInBackground(File... params) {
         data_file = params[0];
-	  	Log.d("Async", "Start Thread "+data_file);
         return Globals.decodeSampledBitmapFromResource(data_file, 600, 600);
     }
 
     // Once complete, see if ImageView is still around and set bitmap.
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-	  	Log.d("Async", "Post Execute");
 
         if (videoBufferReference != null && bitmap != null) {
             final VideoBuffer buffer = videoBufferReference.get();
             if (buffer != null) {
-            	buffer.setFrameBitmap(bitmap, index);
+            	buffer.setFrameBitmap(bitmap);
             }
         }
     }

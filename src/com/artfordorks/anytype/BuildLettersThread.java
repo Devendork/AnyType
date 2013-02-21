@@ -1,47 +1,84 @@
 package com.artfordorks.anytype;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.GridView;
 
-public class BuildLettersThread extends AsyncTask<Integer, Void, Void> {
+public class BuildLettersThread extends AsyncTask<Object, Void, Void> {
 
-	    private int data = 0;
-	    private final WeakReference<GridView> letterGrid;
+	    private int data;
+	    private Bitmap bmap;
+
+	    
 
 
 	    public BuildLettersThread() {
-	    	letterGrid = new WeakReference<GridView>(Globals.canvas_letter_grid);    
-	    }
 
+	    	
+	    	Log.d("Async", "Added to globals builder threads");
+			Globals.builder_threads++;
+	    
+	    }
+	    
 	    // Decode image in background.
 	    @Override
-	    protected Void doInBackground(Integer... params) {
-	        data = params[0];
-	    	Log.d("Async", "Starting Process "+data);
+	    protected Void doInBackground(Object... params) {
 
-	        Globals.buildLetters(data);
-	        if(Globals.using_video) Globals.makeVideoFrames(data);
+	        Log.d("Async", "Starting Process "+data);
+	    	
+	    		
+		        data = (Integer) params[0];
+		        bmap = (Bitmap) params[1];
+		        
+		    				
+				File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "IMG_" + Integer.toString(data) + "_CROP.png");
+	
+	
+				try {
+					FileOutputStream fos = new FileOutputStream(pictureFile);
+					bmap.compress(Bitmap.CompressFormat.PNG, 60, fos);
+					fos.close();
+				
+				} catch (FileNotFoundException e) {
+					Log.d("Thead", "File not found: " + e.getMessage());
+				} catch (IOException e) {
+					Log.d("Thead", "Error accessing file: " + e.getMessage());
+				}
+				
+				
+				bmap.recycle();
+		    	
+		   
+		        Globals.buildLetters(data);
+		        if(Globals.using_video) Globals.makeVideoFrames(data);
+	    	
+	    	
 	        return null;      
 	    }
 
-	    // Once complete, see if (Change this to the GridView) is still around and set bitmap.
+	    
 	    @Override
 	    protected void onPostExecute(Void v) {
-	    	 Log.d("Async", "Finished Process "+data);
+	    	Globals.builder_threads--;
 	    	
-	    	  if (letterGrid != null ) {
-	 	    	 Log.d("Async", "LetterGrid not null ");
-
-	              //final GridView gv = letterGrid.get();
-	              
-	              if (Globals.canvas_letter_grid != null) {
-	 	 	    	 Log.d("Async", "Grid View not null ");
-	 	 	    	Globals.canvas_letter_grid.invalidate();
-	              }
-	          }	    
+	    	 Log.d("Async", "Finished Process "+data);
+              
+	        	 if (Globals.progress != null) {
+ 	 	    	 Log.d("Async", "TPV not null ");
+ 	 	    	 	Globals.progress.updateProgress();
+	        	 }else{
+	        		 Log.d("Async", "TPV NULL");
+	        	 }
+	         
+	             
 	    }
 	
 }
