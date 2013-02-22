@@ -18,27 +18,21 @@ public class BuildLettersThread extends AsyncTask<Object, Void, Void> {
 	    private Bitmap bmap;
 
 	    
-
-
 	    public BuildLettersThread() {
-
-	    	
 	    	Log.d("Async", "Added to globals builder threads");
 			Globals.builder_threads++;
-	    
 	    }
 	    
 	    // Decode image in background.
 	    @Override
 	    protected Void doInBackground(Object... params) {
 
-	        Log.d("Async", "Starting Process "+data);
-	    	
-	    		
+	    	    		
 		        data = (Integer) params[0];
 		        bmap = (Bitmap) params[1];
 		        
-		    				
+		        Log.d("Async", "Starting Process "+data);
+    				
 				File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "IMG_" + Integer.toString(data) + "_CROP.png");
 	
 	

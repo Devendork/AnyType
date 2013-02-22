@@ -32,40 +32,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
-//class LoadAnimationFrameThread extends AsyncTask<File, Bitmap, Bitmap> {
-//    private final WeakReference<Bitmap> frameReference;
-//    private File data_file = null;
-//
-//    public LoadAnimationFrameThread(Bitmap frame) {
-//    	Log.d("Async", "Init Thread");
-//        frameReference = new WeakReference<Bitmap>(frame);
-//    }
-//
-//	@Override
-//	protected Bitmap doInBackground(File... params) {
-//		Bitmap b = null;
-//	    data_file = (File) params[0];
-//	  	Log.d("Async", "Start Thread "+data_file);
-//	     if(data_file != null)  b =  Globals.decodeSampledBitmapFromResource(data_file, Globals.letter_size, Globals.letter_size);
-//	  	Log.d("Async", "Finsihed Loading Image "+data_file);
-//	    return b;
-//	}
-//
-//	@Override
-//    protected void onPostExecute(Bitmap loadedFrame) {
-//    	Log.d("Async", "Finished Executing");
-//        if (frameReference != null && loadedFrame != null) {
-//            Bitmap load_into = frameReference.get();
-//            if (load_into != null) {
-//            	load_into = loadedFrame;
-//            }
-//        }
-//        return;
-//    }
-//
-//
-//}
-
 class LoadAnimationFrameThread extends AsyncTask<File, Void, Bitmap> {
     private final WeakReference<VideoBuffer> videoBufferReference;
     private File data_file = null;

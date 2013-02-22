@@ -684,6 +684,7 @@ public class Globals {
 			
 //		reqWidth*= screen_density;
 //		reqHeight*= screen_density;
+		if(f == null) return null;
 		
 		try {
 	        //Decode image size
@@ -805,6 +806,8 @@ public class Globals {
 	public static void makeVideoFrames(int id){
 		String f = getStageVideoPath(id);
 		
+		File pictureFile = null;
+		
 		long interval = 1000000l/(long)frames_per_second; 
 		
 		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
@@ -822,7 +825,7 @@ public class Globals {
 				
 				try {
 
-				File pictureFile = Globals.getOutputMediaFile(
+				pictureFile = Globals.getOutputMediaFile(
 						Globals.MEDIA_TYPE_IMAGE, Integer.toString(id) + "_video_"+index+".png");
 
 				Bitmap out = mmr.getFrameAtTime(count, MediaMetadataRetriever.OPTION_CLOSEST);
@@ -847,7 +850,7 @@ public class Globals {
 				Log.d("Canvas", "Illegal Arg" + e.getMessage());
 			}
 			
-			Log.d("Frames", "Saved Frame at "+count+" of vid length "+video_length);
+			Log.d("Async", "Saved Frame: "+pictureFile.getPath());
 			count += interval;
 			index++;
 		}

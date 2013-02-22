@@ -11,6 +11,17 @@
             android:gravity="right|center_vertical"
             android:orientation="horizontal" >
 
+         <ToggleButton
+             android:id="@+id/button_sequence"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Play In Sequence" />
+         
+          <ToggleButton
+             android:id="@+id/button_reverse"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Reverse Order" />
 
             <Button
                 android:id="@+id/button_reset"

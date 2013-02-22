@@ -72,6 +72,7 @@ public class CanvasActivity extends Activity{
 	private GestureDetector gd;
 	private ScaleGestureDetector sd;
 	private GridView canvas_letter_grid;
+	private boolean sequential = false;
 	
 	private double beginTime = System.currentTimeMillis();
 
@@ -107,8 +108,8 @@ public class CanvasActivity extends Activity{
 	    	int selected = letter_view.locate((int) e.getX(), (int) e.getY());			
 	    	if (selected != -1){
 	    		
-	    		//no matter what is pressed - stop the currently playing video
-	    		if(Globals.using_video) letter_view.stopLetterVideo();
+	    		letter_view.stopAllVideos();
+	    		
 				launchLetterPartView(letter_view.getCurLetterId());
 	    		//launchLetterEditor(letter_view.getCurLetterId());
 	    		
@@ -124,17 +125,15 @@ public class CanvasActivity extends Activity{
 	    		//launchLetterEditor(letter_view.getCurLetterId());
 	    		
 	    		if(Globals.using_video){
-	    			boolean same_letter = letter_view.isPlaying(selected);
 	    			
+	    			 boolean same_letter = letter_view.isPlaying(selected);
 	    			
-    				letter_view.stopLetterVideo();
-
-	    			//if the letter that was tapped is different, select the new video
-	    			if(!same_letter){
+	    			if(same_letter){
+	    				letter_view.stopLetterVideo(selected);
+	    			}else{
 	    				//if a new letter is selected for playing, stop the original video first
 	    				Log.d("Async", "Selected Play Video "+selected);
-	    				letter_view.select(selected);
-	    				letter_view.playLetterVideo(); 
+	    				letter_view.playLetterVideo(selected); 
 	    			}
 	    		}
 	    		
@@ -193,7 +192,15 @@ public class CanvasActivity extends Activity{
 
 		
 
-		letter_view = new LetterView(this);
+		
+		
+		if(Globals.using_video){
+			if(sequential) letter_view = new LetterViewSequential(this);
+			else letter_view = new LetterViewConcurrent(this);
+		}
+		else letter_view = new LetterViewStatic(this);
+		
+		
 		letter_view.setClickable(true);
 		FrameLayout canvas = (FrameLayout) findViewById(R.id.canvas_frame);
 		canvas.addView(letter_view, new LayoutParams(LayoutParams.WRAP_CONTENT,
