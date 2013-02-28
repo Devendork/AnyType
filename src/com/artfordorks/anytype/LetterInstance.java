@@ -199,14 +199,12 @@ public class LetterInstance {
 	public void scaleByPercent(double per){
 		double curWidth = scale*600; 
 		double newWidth = curWidth + (curWidth *per*0.01);
-		double prescale = scale;
 		
 
 		scale = (float) (newWidth / 600);
 		if(scale <= 0.1) scale = (float) 0.1;
 		
 		updateVars();
-		Log.d("Scale", "cur / new "+curWidth+" : "+newWidth+" scale before : "+prescale +" scale after "+scale);
 		
 	}
 	
@@ -220,15 +218,6 @@ public class LetterInstance {
 		updateVars();
 	}
 		
-	
-	public void setRotations(float rots, float x, float y){
-//		rotation = rots;
-//		//this should be relative to the letter
-//		rotation_x = x - pos[0];
-//		rotation_y = y - pos[1];
-//		updateVars();
-	}
-
 
 	public boolean hasFocus() {
 		return hasFocus;

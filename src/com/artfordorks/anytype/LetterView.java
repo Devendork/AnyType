@@ -61,7 +61,8 @@ public abstract class LetterView extends View {
 	protected HashMap<Integer, Bitmap> letter_images;
 	protected int cur;
 	protected int uid = 0;
-
+	protected boolean reverse_order;
+	
 
 	public LetterView(Context context) {
 		super(context);
@@ -231,22 +232,12 @@ public abstract class LetterView extends View {
 		LetterInstance li = letters.get(cur);
 		li.scaleByPercent(percent);
 	}
-
-//	public void updateScale(float scale) {
-//		if(cur == -1) return;
-//		
-//		LetterInstance li = letters.get(cur);
-//		li.setScale(scale*2);
-//		
-//	}
 	
-	public void setRotations(float rots, float x, float y){
-		if(cur == -1) return;
-		
-		LetterInstance li = letters.get(cur);
-		li.setRotations(rots, x, y);
-		
+	public void setReverse(boolean r){
+		stopAllVideos();
+		reverse_order = r;
 	}
+
 	
 	public void incRotations(float rots){
 		if(cur == -1) return;

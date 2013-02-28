@@ -48,6 +48,9 @@ public class VideoBuffer {
 	protected int	   next_frame_to_load = 0;
 	protected int buffer_depth = Globals.buffer_depth;
 	protected boolean ready = false;
+	protected boolean reverse_order;
+	protected int last_image_file = 0;
+
 			
 	
 	//loads the first x frames into a buffer
@@ -58,9 +61,7 @@ public class VideoBuffer {
 			LoadAnimationFrameThread thread = new LoadAnimationFrameThread(this);
 			thread.execute(image_files[i]);
 		}
-
 		next_frame_to_load = buffer_depth;
-		
 	}
 	
 	
@@ -89,10 +90,34 @@ public class VideoBuffer {
 		
 	}
 	
+	public int getTopFrameId(){
+		int ndx = (next_frame_to_load - buffer_depth) % image_files.length;
+		if(ndx < 0) ndx = image_files.length + ndx;
+		return ndx;
+	}
+	
 	//this returns the top of the buffer. 
 	public Bitmap getTopFrame(){
 		if(frames.size() > 0) return frames.getFirst();
 		else return null;
+	}
+	
+	public boolean isTopFrameLast(){
+		int ndx = (next_frame_to_load - buffer_depth) % image_files.length;
+		if(ndx < 0) ndx = image_files.length + ndx;
+		
+		return (ndx == last_image_file);
+		
+	}
+	
+	public boolean isTopFrameReverseLast(){
+		if(!reverse_order) return false;
+		
+		int ndx = (next_frame_to_load - buffer_depth) % image_files.length;
+		if(ndx < 0) ndx = image_files.length + ndx;
+		
+		return (ndx == (image_files.length -1));
+		
 	}
 	
 	public void clearBuffer(){

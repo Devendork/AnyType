@@ -46,7 +46,7 @@ public class VideoBufferLetter extends VideoBuffer{
 	private Letter letter;
 	private int lv_unique_id; //the unique of the playing letter from letterview
 	
-	public VideoBufferLetter(int uid, Letter l){
+	public VideoBufferLetter(int uid, Letter l, boolean rev){
 
 		int num_frames = 0;
 		int ndx = 0;
@@ -55,11 +55,15 @@ public class VideoBufferLetter extends VideoBuffer{
 		frames = new LinkedList<Bitmap>();
 		letter = l;
 		lv_unique_id = uid;
+		reverse_order = rev;
 		
 		for(int i = 0; i < shape_ids.length; i++) num_frames += Globals.getShape(shape_ids[i]).getNumFrames();
 
-		image_files = new File[num_frames];
-		shape_in_letters_ids = new int[num_frames];
+		if(reverse_order) image_files = new File[num_frames*2-2];
+		else image_files = new File[num_frames];
+
+		
+		shape_in_letters_ids = new int[image_files.length];
 		
 		Log.d("Async", "Image Files size "+image_files.length);
 		
@@ -76,7 +80,27 @@ public class VideoBufferLetter extends VideoBuffer{
 						+".png");
 				
 				shape_in_letters_ids[ndx] = i;
+				Log.d("File Adds", "Added B"+image_files[ndx].getPath());
+
 				ndx++;
+			}
+		}
+		
+		if(reverse_order){
+			//reverse the direction
+			for(int i = shape_ids.length-1; i <= 0; i--){
+				for(int j = (Globals.getShape(shape_ids[i]).getNumFrames()-2); j >  0; j--){
+					image_files[ndx] = new File(Globals.getTestPath() 
+							+ File.separator 
+							+ Integer.toString(shape_ids[i]) 
+							+ "_video_"
+							+ j
+							+".png");
+					shape_in_letters_ids[ndx] = i;
+
+					Log.d("File Adds", "Added B"+image_files[ndx].getPath());
+					ndx++;
+				}
 			}
 		}
 		

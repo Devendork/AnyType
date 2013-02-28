@@ -45,14 +45,20 @@ public class VideoBufferShape extends VideoBuffer {
 	
 	private int shape_id;
 	
-	public VideoBufferShape(Shape s){
+	public VideoBufferShape(Shape s, boolean reverse){
 
 		int ndx = 0;
 		
 		this.shape_id = s.getId();
 		
 		frames = new LinkedList<Bitmap>();
-		image_files = new File[(s.getNumFrames()*2)-2];
+		reverse_order = reverse;
+		last_image_file = s.getNumFrames()-1;
+		
+		if(reverse_order) image_files = new File[(s.getNumFrames()*2)-2];
+		else image_files = new File[s.getNumFrames()];
+		
+
 		
 		Log.d("Async", "Image Files size "+image_files.length);
 		
@@ -73,6 +79,7 @@ public class VideoBufferShape extends VideoBuffer {
 				ndx++;
 			}
 			
+			if(reverse_order){
 			//reverse the direction
 			for(int j = (s.getNumFrames()-2); j >  0; j--){
 				image_files[ndx] = new File(Globals.getTestPath() 
@@ -83,6 +90,7 @@ public class VideoBufferShape extends VideoBuffer {
 						+".png");
 				Log.d("File Adds", "Added B"+image_files[ndx].getPath());
 				ndx++;
+			}
 			}
 		
 		initFrameSet();

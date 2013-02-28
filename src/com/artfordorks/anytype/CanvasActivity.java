@@ -58,7 +58,9 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.artfordorks.anytype.R.id;
 
@@ -73,6 +75,7 @@ public class CanvasActivity extends Activity{
 	private ScaleGestureDetector sd;
 	private GridView canvas_letter_grid;
 	private boolean sequential = false;
+	private boolean reverse_order = false;
 	
 	private double beginTime = System.currentTimeMillis();
 
@@ -194,10 +197,7 @@ public class CanvasActivity extends Activity{
 
 		
 		
-		if(Globals.using_video){
-			if(sequential) letter_view = new LetterViewSequential(this);
-			else letter_view = new LetterViewConcurrent(this);
-		}
+		if(Globals.using_video) letter_view = new LetterViewDynamic(this, sequential);
 		else letter_view = new LetterViewStatic(this);
 		
 		
@@ -297,8 +297,49 @@ public class CanvasActivity extends Activity{
 			}
 		});
 		
+		
+		ToggleButton sequentialButton = (ToggleButton) findViewById(id.button_sequence);
+		sequentialButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				toggleSequential();
+			}
+		});
+		
+		
+		
+		ToggleButton reverseButton = (ToggleButton) findViewById(id.button_reverse);
+		reverseButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				reverse_order = !reverse_order;
+				toggleReverseOrder();
+			}
+		});
+		
+		TextView label_reverse = (TextView) findViewById(id.text_reverse);
+		TextView label_sequence = (TextView) findViewById(id.text_reverse);
+		
+		if(!Globals.using_video){
+			sequentialButton.setVisibility(View.INVISIBLE);
+			reverseButton.setVisibility(View.INVISIBLE);
+			label_reverse.setVisibility(View.INVISIBLE);
+			label_sequence.setVisibility(View.INVISIBLE);
+		}
+			
+		
 		LinearLayout ll = (LinearLayout) findViewById(R.id.instructions);
 		if(letter_view.hasLetters()) ll.setVisibility(View.INVISIBLE);
+	}
+	
+	public void toggleSequential(){
+		sequential = !sequential;
+		((LetterViewDynamic)letter_view).toggleSequential(sequential);
+		
+	}
+	
+	public void toggleReverseOrder(){
+		letter_view.setReverse(reverse_order);		
 	}
 	
 

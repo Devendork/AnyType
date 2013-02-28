@@ -540,7 +540,6 @@ public class Globals {
 		double denom = ((x1-x2)*(y3-y4))-((y1-y2)*(x3-x4));
 		double numx = ((x1*y2 - y1*x2)*(x3-x4)) - ((x1-x2)*(x3*y4-y3*x4));
 		double numy = ((x1*y2 - y1*x2)*(y3-y4)) - ((y1-y2)*(x3*y4-y3*x4));
-		Log.d("Rots", "Denom is "+denom);
 
 		if(denom == 0) ps[0] = -1;
 		else{
@@ -582,63 +581,18 @@ public class Globals {
 		if(q1x == -1) return 0.0;
 
 		double[] isect = new double[2];
-		isect = lineIntersection(px, py, qx, qy, p1x, p1y, q1x, q1y);
-		Log.d("Rots", "Isect Pt is "+isect[0]+", "+isect[1]);
-
-
-		
+		isect = lineIntersection(px, py, qx, qy, p1x, p1y, q1x, q1y);		
 		
 		if(isect[0] == -1) return 0; //these lines are parallel
 		                            
-//		double dot =  (qx-isect[0])*(q1x-isect[0]) + (qy-isect[1])*(q1y-isect[1]);
-//		double magx = Math.sqrt(Math.pow((qx-isect[0]),2)+Math.pow((qy-isect[1]), 2));
-//		double magy = Math.sqrt(Math.pow((q1x-isect[0]),2)+Math.pow((q1y-isect[1]), 2));
-//		
-
-//		if(magx*magy == 0 || (dot / (magx*magy)) > 1.0){
-//			Log.d("Rots", "Returning Angle 0");
-//			return 0;
-//		}
-		
 		double signed_angle = Math.atan2(q1y-isect[1], q1x-isect[0]) - Math.atan2(qy-isect[1], qx-isect[0]);
 		signed_angle *= -1;
-		Log.d("Rots", "Signed Angle " +   Math.toDegrees(signed_angle));
 
 		
 		return Math.toDegrees(signed_angle);
 	}
 	
-	
-//	public static float getRotation(float x, float y, float x2, float y2) {
-//
-//		float[] finger1 = new float[2];
-//		float[] finger2 = new float[2];
-//
-//		if (lastfinger1[0] == -1
-//				|| sqrdist(x, y, lastfinger1[0], lastfinger1[1]) <= sqrdist(x,
-//						y, lastfinger2[0], lastfinger2[1])) {
-//			finger1[0] = x;
-//			finger1[1] = y;
-//			finger2[0] = x2;
-//			finger2[1] = y2;
-//		} else {
-//			finger1[0] = x2;
-//			finger1[1] = y2;
-//			finger2[0] = x;
-//			finger2[1] = y;
-//		}
-//
-//		float dx = finger2[0] - finger1[0];
-//		float dy = finger2[1] - finger2[0];
-//
-//		float angle = (float) Math.toDegrees(Math.atan(dy / dx));
-//		Log.d("Matrix", "Returning Angle " + angle);
-//
-//		lastfinger1 = finger1;
-//		lastfinger2 = finger2;
-//
-//		return angle;
-//	}
+
 
 	public static float getScale(float span) {
 		float s = 0;

@@ -29,8 +29,11 @@ Got the video fully integrated with the photo version. The video is playing back
 2-21-13
 Got the video working much nicer. Now the code is able to support both sequential playback in the letter as well as playing all of the shapes within the letter at once. Multiple letters can play at one time. 
 
+2-28-13
+Switching between sequenial and concurrent playback working in canvas. Improved the workflow of sequential playback. 
+
 To Do:
-- Add feature to reverse shapes in sequential order to avoid snapping effect
+- Debug the letter editor
 - Save custom paths and reload ... make datafile for each font
 - make shape paths sharper and less rigid
 

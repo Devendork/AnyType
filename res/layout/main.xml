@@ -36,6 +36,7 @@
             android:gravity="center_vertical|center_horizontal|center"
             android:orientation="vertical" >
 
+    
             
             <LinearLayout
             android:layout_width="wrap_content"
@@ -53,7 +54,29 @@
             
             </LinearLayout>
 
+            <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|left"
+            android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/text_fps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Frames per Second" />
           
+                    <EditText
+                android:id="@+id/edit_text_fps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number" 
+                android:text="5">
+                
+            </EditText>
+
+           </LinearLayout>
             
            <LinearLayout
             android:layout_width="wrap_content"
