@@ -94,6 +94,7 @@ public class LoadFontActivity extends Activity {
 					public void onClick(View view) {
 						Log.d("Tap", "Clicked "+files.get(view.getId()));
 					    if(Globals.edit) launchEdit(files.get(view.getId()));
+					    else if(Globals.rebuild) launchRebuild(files.get(view.getId()));
 						else openFont(files.get(view.getId()));
 					}
                 	
@@ -136,6 +137,24 @@ public class LoadFontActivity extends Activity {
 		Globals.writeToLog(this, super.getLocalClassName(), "ViewCapture - "+s, time);
 		
 		Intent intent = new Intent(this, ViewCaptureActivity.class);
+		startActivity(intent);
+	}
+	
+	
+	public void launchRebuild(String s){
+		Globals.base_dir_name = s;
+		Globals.edit = true;
+
+		
+		double endTime = System.currentTimeMillis();
+		double time = endTime - beginTime;
+		Globals.writeToLog(this, super.getLocalClassName(), "Rebuild - "+s, time);
+		
+		 BuildLettersThread bl_thread = new BuildLettersThread();
+		 bl_thread.execute(Globals.stage, null);
+		
+		
+		Intent intent = new Intent(this, ProgressActivity.class);
 		startActivity(intent);
 	}
 	

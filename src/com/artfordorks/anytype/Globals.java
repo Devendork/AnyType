@@ -75,7 +75,7 @@ public class Globals {
 	static int grab_num = 0;
 	static String base_dir_name;
 
-	static int background_alpha = 150;
+	static int background_alpha = 200;
 	static int line_num = 0;
 	static String save_string = "";
 	static boolean edit = false;
@@ -92,6 +92,8 @@ public class Globals {
 	public static Point preview_size = new Point();
 	static double aspect_ratio;
 	static float screen_density;
+	
+	static boolean rebuild = false;
 	
 //	static double longitude;
 //	static double latitude;
@@ -639,6 +641,7 @@ public class Globals {
 //		reqWidth*= screen_density;
 //		reqHeight*= screen_density;
 		if(f == null) return null;
+		Bitmap out = null;
 		
 		try {
 	        //Decode image size
@@ -655,10 +658,18 @@ public class Globals {
 	        o2.inScaled = false;
 	       // o2.inDensity = (int)Globals.screen_density;
 	        o2.inSampleSize=scale;
-	          
-	        return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-	    } catch (FileNotFoundException e) {}
-	    return null;	  
+	         
+	        out = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+	    	Log.d("Bitmap", "Out is null? "+out);
+	        
+	        
+	    } catch (FileNotFoundException e) {
+	    	Log.d("Bitmap", "File Not Found "+e.getMessage());
+	    }catch(Exception e){
+	    	Log.d("Bitmap", "Other Error "+e.getMessage());
+	    	
+	    }
+	    return out;	  
 		    
 	}
 
@@ -821,15 +832,76 @@ public class Globals {
 		Bitmap  bitmap = Bitmap.createBitmap(Globals.preview_size.x, Globals.preview_size.y, Bitmap.Config.ARGB_8888);
 		Canvas  c = new Canvas(bitmap);
 		Bitmap out;
-		Point ctrAt = new Point();
+		boolean custom = false;
+		RectF pathBounds = new RectF();
+		Path custom_path = new Path();
+	
 		
-
-		Path path = new Path(shapes[stage_id].getPath());		
-
-
+		/////////
+		//get the pixels from the current screen
+				
+		Path path = new Path(shapes[stage_id].getPath());	
+		
+		if(shapes[stage_id].hasCustomPath()){
+			custom = true;
+			custom_path = new Path(shapes[stage_id].getCustomPath());
+		}
+		
+			
+		//stretch the original shape to its viewing size
 		try {
 			Matrix m = new Matrix();
-			//m.setScale(Globals.shapeStretch, Globals.shapeStretch);
+			m.setScale(shapeStretch, shapeStretch);
+			path.transform(m);
+		} catch (Exception e) {
+			Log.d("Path", "Matrix " + e.getMessage());
+		}
+		
+		//get the current size of the original shape
+		path.computeBounds(pathBounds, true);	
+		
+		//move it to the center of the screen
+		Point ctrAt = new Point();
+		ctrAt.set((int)(preview_size.x-pathBounds.width())/2, (int)(preview_size.y-pathBounds.height())/2 + 15);
+
+		try {
+			path.offset(ctrAt.x, ctrAt.y);
+		} catch (Exception e) {
+			Log.d("Path", "Offset "+e.getMessage());
+		}
+
+			
+		
+		//update the bounds for the base path	
+		path.computeBounds(pathBounds, true);
+
+
+	   c.drawColor(Color.TRANSPARENT);
+	   if(!custom) c.clipPath(path);
+	   else c.clipPath(custom_path);
+	   c.drawBitmap(frame, null,new Rect(0, 0, Globals.preview_size.x, Globals.preview_size.y), null);			
+				
+		try{
+			//just cut out the portion dictated by the original letter
+			out = Bitmap.createBitmap(bitmap,(int)pathBounds.left, (int)pathBounds.top, (int) pathBounds.width()+2, (int) pathBounds.height()+2, new Matrix(), false);
+		}catch(IllegalArgumentException e){
+			out = null;
+			Log.d("Path", e.getMessage());
+		}
+				
+		frame.recycle();
+		bitmap.recycle();
+		System.gc();
+		return out;
+		
+		//////
+		
+		/*
+		Path path = new Path(shapes[stage_id].getPath());				
+		
+		
+		try {
+			Matrix m = new Matrix();
 			m.setScale(shapeStretch, shapeStretch);
 			path.transform(m);
 		} catch (Exception e) {
@@ -840,19 +912,22 @@ public class Globals {
 		RectF pathBounds = new RectF();
 		path.computeBounds(pathBounds, true);
 
+		
 		//this is only relative to the original path
 		ctrAt.set((int)(preview_size.x-pathBounds.width())/2, (int)(preview_size.y-pathBounds.height())/2 + 15);
 
 		//offset by bounds
-		try {
-			path.offset(ctrAt.x, ctrAt.y);
-		} catch (Exception e) {
-			Log.d("Offset", e.getMessage());
+		if(!custom){
+			try {
+				path.offset(ctrAt.x, ctrAt.y);
+			} catch (Exception e) {
+				Log.d("Offset", e.getMessage());
+			}
 		}
 		
+
 		path.computeBounds(pathBounds, true);
 
-		c.drawColor(Color.TRANSPARENT);
 		c.clipPath(path);
 		c.drawBitmap(frame, null,new Rect(0, 0, Globals.preview_size.x, Globals.preview_size.y), null);			
 		
@@ -860,8 +935,9 @@ public class Globals {
 		try{
 			out = Bitmap.createBitmap(bitmap,(int)pathBounds.left, (int)pathBounds.top, (int) pathBounds.width()+2, (int) pathBounds.height()+2, new Matrix(), false);
 		}catch(IllegalArgumentException e){
+			Log.d("Path", "Illegal Argument "+e.getMessage());
+
 			out = null;
-			Log.d("Get Screen Bitmap", e.getMessage());
 		}
 		
 		frame.recycle();
@@ -869,6 +945,7 @@ public class Globals {
 		
 		System.gc();
 		return out;		
+		*/
 	}
 
 	

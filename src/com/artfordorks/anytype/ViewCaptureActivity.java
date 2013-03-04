@@ -202,7 +202,6 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 			if(Globals.builder_threads == 0) intent = new Intent(this, CanvasActivity.class);
 			else intent = new Intent(this, ProgressActivity.class);
 		    startActivity(intent);
-			startActivity(intent);
 		}else finish();
 
 	}

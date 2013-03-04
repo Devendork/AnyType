@@ -42,7 +42,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -76,7 +78,10 @@ public class CanvasActivity extends Activity{
 	private GridView canvas_letter_grid;
 	private boolean sequential = false;
 	private boolean reverse_order = false;
-	
+	private View view;
+	private boolean recording = false;
+	private int rec_count = 0;
+
 	private double beginTime = System.currentTimeMillis();
 
 
@@ -187,6 +192,8 @@ public class CanvasActivity extends Activity{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.canvas);
 		
+		view = (View) findViewById(R.id.top_view);
+		
 		gd = new GestureDetector(CanvasActivity.this, new GestureListener(), new Handler());
 		sd = new ScaleGestureDetector(CanvasActivity.this, new ScaleListener());
 		
@@ -261,7 +268,15 @@ public class CanvasActivity extends Activity{
 			letter_view.loadState(Globals.saved_lv);
 			Globals.saved_lv = null;	
 		}
-		
+
+		ToggleButton recordButton = (ToggleButton) findViewById(id.button_record);
+		recordButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				recording = !recording;
+				rec_count = 0;
+			}
+		});
 
 		Button saveButton = (Button) findViewById(id.button_save_canvas);
 		saveButton.setOnClickListener(new View.OnClickListener() {
@@ -318,13 +333,14 @@ public class CanvasActivity extends Activity{
 		});
 		
 		TextView label_reverse = (TextView) findViewById(id.text_reverse);
-		TextView label_sequence = (TextView) findViewById(id.text_reverse);
+		TextView label_sequence = (TextView) findViewById(id.text_sequence);
 		
 		if(!Globals.using_video){
 			sequentialButton.setVisibility(View.INVISIBLE);
 			reverseButton.setVisibility(View.INVISIBLE);
 			label_reverse.setVisibility(View.INVISIBLE);
 			label_sequence.setVisibility(View.INVISIBLE);
+			recordButton.setVisibility(View.INVISIBLE);
 		}
 			
 		
@@ -539,6 +555,37 @@ public class CanvasActivity extends Activity{
 		
 		Intent intent = new Intent(this, LetterEditActivity.class);
 		startActivity(intent);
+	}
+	
+	//if record is on do this every time the screen frame changes
+	public void saveScreen(){
+		View v = view.getRootView();
+        v.setDrawingCacheEnabled(true);
+        Bitmap b = v.getDrawingCache();             
+        String extr = Globals.getTestPath();
+       
+        File myPath = new File(extr, "SS_"+System.currentTimeMillis()+"_"+rec_count+"_"+rec_count/Globals.frames_per_second+".jpg");
+        Log.d("Path", "Saved to "+myPath.getAbsolutePath());
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(myPath);
+            b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+            MediaStore.Images.Media.insertImage(getContentResolver(), b, "Screen", "screen");
+        }catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        rec_count++;
+	}
+	
+	public boolean isRecording(){
+		return recording;
 	}
 	
 

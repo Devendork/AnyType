@@ -318,6 +318,16 @@ public class LoadActivity extends Activity {
 			}
 		});
 		
+		Button button_rebuild = (Button) findViewById(id.button_rebuild);
+		button_rebuild.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				 Globals.rebuild = true;
+				loadExistingFont();
+
+			}
+		});
+		
 		fps_input = (EditText) findViewById(id.edit_text_fps);
 		fps_input.setText(String.valueOf(Globals.frames_per_second));
 		fps_input.setTextColor(Color.BLACK);
@@ -336,8 +346,13 @@ public class LoadActivity extends Activity {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				Globals.using_video = isChecked;
-				fps_input.setVisibility(View.VISIBLE);
-				fps_label.setVisibility(View.VISIBLE);
+				if(isChecked){
+					fps_input.setVisibility(View.VISIBLE);
+					fps_label.setVisibility(View.VISIBLE);
+				}else{
+					fps_input.setVisibility(View.INVISIBLE);
+					fps_label.setVisibility(View.INVISIBLE);
+				}
 			}
 		});
 		

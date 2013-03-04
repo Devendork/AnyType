@@ -1,9 +1,11 @@
 package com.artfordorks.anytype;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 
 import android.app.Activity;
@@ -31,25 +33,37 @@ public class BuildLettersThread extends AsyncTask<Object, Void, Void> {
 		        data = (Integer) params[0];
 		        bmap = (Bitmap) params[1];
 		        
-		        Log.d("Async", "Starting Process "+data);
-    				
-				File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "IMG_" + Integer.toString(data) + "_CROP.png");
-	
-	
-				try {
-					FileOutputStream fos = new FileOutputStream(pictureFile);
-					bmap.compress(Bitmap.CompressFormat.PNG, 60, fos);
-					fos.close();
-				
-				} catch (FileNotFoundException e) {
-					Log.d("Thead", "File not found: " + e.getMessage());
-				} catch (IOException e) {
-					Log.d("Thead", "Error accessing file: " + e.getMessage());
-				}
-				
-				
-				bmap.recycle();
-		    	
+		        //if bmap is null then we're just rebuilding the letters from existing files
+		        if(bmap != null){
+			        Log.d("Bitmap", "Starting Process "+data);
+	    				
+					File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "IMG_" + Integer.toString(data) + "_CROP.png");
+		
+					try {
+						OutputStream out = null;
+						   try {
+						    out = new BufferedOutputStream(new FileOutputStream(pictureFile));
+							bmap.compress(Bitmap.CompressFormat.PNG, 60, out);
+
+						   }finally {
+						     if (out != null) {
+						       out.close();
+						     }
+					}
+						
+						//FileOutputStream fos = new FileOutputStream(pictureFile);
+//						bmap.compress(Bitmap.CompressFormat.PNG, 60, out);
+//						fos.close();
+//					
+					} catch (FileNotFoundException e) {
+						Log.d("Bitmap", "File not found: " + e.getMessage());
+					} catch (IOException e) {
+						Log.d("Bitmap", "Error accessing file: " + e.getMessage());
+					}
+					
+					
+					bmap.recycle();
+		        }
 		   
 		        Globals.buildLetters(data);
 		        if(Globals.using_video) Globals.makeVideoFrames(data);

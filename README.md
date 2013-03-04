@@ -33,6 +33,7 @@ Got the video working much nicer. Now the code is able to support both sequentia
 Switching between sequenial and concurrent playback working in canvas. Improved the workflow of sequential playback. 
 
 To Do:
+- Debug custom video shapes - mostly done
 - Debug the letter editor
 - Save custom paths and reload ... make datafile for each font
 - make shape paths sharper and less rigid

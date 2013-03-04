@@ -127,6 +127,14 @@ public class Shape extends Activity{
 
 	}
 	
+	public boolean hasCustomPath(){
+		return custom;
+	}
+	
+	public Path getCustomPath(){
+		return custom_path;
+	}
+	
 	public void makeBounds(){
 		bounds = new Rect(1000000, 1000000, -1000000, -1000000);
 		

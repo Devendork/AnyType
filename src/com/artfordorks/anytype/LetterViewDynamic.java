@@ -60,6 +60,7 @@ public class LetterViewDynamic extends LetterView {
 	private int next_frame = 0;
 	private final long frame_delay = 1000l / (long) Globals.frames_per_second;
 	private boolean sequential = false;
+	private final CanvasActivity ca;
 
 	public LetterViewDynamic(Context context, boolean seq) {
 		super(context);
@@ -70,6 +71,7 @@ public class LetterViewDynamic extends LetterView {
 		buffers_ready = new HashMap();
 		now_playing = new HashMap();
 		
+		this.ca = (CanvasActivity) context;
 		this.sequential = seq;
 		
 		this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -82,6 +84,7 @@ public class LetterViewDynamic extends LetterView {
 				next_frame = c_buffers.size(); // give this as many values as
 												// there are buffers
 				invalidate();
+				if(ca.isRecording()) ca.saveScreen();
 				handler.postDelayed(this, frame_delay);
 			}
 
