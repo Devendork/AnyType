@@ -150,8 +150,10 @@ public class LoadFontActivity extends Activity {
 		double time = endTime - beginTime;
 		Globals.writeToLog(this, super.getLocalClassName(), "Rebuild - "+s, time);
 		
+		for(int i = 0; i < 5; i++){
 		 BuildLettersThread bl_thread = new BuildLettersThread();
-		 bl_thread.execute(Globals.stage, null);
+		 bl_thread.execute(i, null);
+		}
 		
 		
 		Intent intent = new Intent(this, ProgressActivity.class);

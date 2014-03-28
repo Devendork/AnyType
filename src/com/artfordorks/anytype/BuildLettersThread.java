@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.GridView;
@@ -18,12 +19,17 @@ public class BuildLettersThread extends AsyncTask<Object, Void, Void> {
 
 	    private int data;
 	    private Bitmap bmap;
-
+	    private MediaMetadataRetriever mmr;
 	    
 	    public BuildLettersThread() {
 	    	Log.d("Async", "Added to globals builder threads");
 			Globals.builder_threads++;
+			
+			
+			
+			
 	    }
+
 	    
 	    // Decode image in background.
 	    @Override
@@ -32,6 +38,10 @@ public class BuildLettersThread extends AsyncTask<Object, Void, Void> {
 	    	    		
 		        data = (Integer) params[0];
 		        bmap = (Bitmap) params[1];
+		        
+		        
+		        
+		        
 		        
 		        //if bmap is null then we're just rebuilding the letters from existing files
 		        if(bmap != null){
@@ -66,7 +76,19 @@ public class BuildLettersThread extends AsyncTask<Object, Void, Void> {
 		        }
 		   
 		        Globals.buildLetters(data);
-		        if(Globals.using_video) Globals.makeVideoFrames(data);
+		        
+		        if(Globals.using_video){
+		        	String f = Globals.getStageVideoPath(data);
+					mmr = new MediaMetadataRetriever();
+					mmr.setDataSource(f);
+					
+					String value = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+					long video_length = Long.parseLong(value);  //this is the length of the video in milliseconds
+					video_length *= 1000; //convert from milliseconds to microseconds
+					
+		        	Globals.makeVideoFrames(data, mmr, video_length);
+		        	mmr.release();
+		        }
 	    	
 	    	
 	        return null;      

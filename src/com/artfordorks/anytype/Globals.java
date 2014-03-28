@@ -762,26 +762,21 @@ public class Globals {
 		return check_file.exists();
 	}
 	
-	public static void makeStageVideo(int stage_id){
-		makeVideoFrames(stage_id);
-		
-	}
+//	public static void makeStageVideo(int stage_id){
+//		makeVideoFrames(stage_id);
+//		
+//	}
 	
 	/*This makes video frames for this shape - gets passed the path to the video*/
-	public static void makeVideoFrames(int id){
-		String f = getStageVideoPath(id);
+	public static void makeVideoFrames(int id, MediaMetadataRetriever mmr, long video_length){
+		//String f = getStageVideoPath(id);
 		
-		File pictureFile = null;
+		File pictureFile  = null;
 		
 		long interval = 1000000l/(long)frames_per_second; 
 		
-		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-		mmr.setDataSource(f);
-		
-		String value = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-		long video_length = Long.parseLong(value);  //this is the length of the video in milliseconds
-		
-		video_length *= 1000; //convert from milliseconds to microseconds
+		//MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+		//mmr.setDataSource(f);
 				
 		long count = 0;
 		int index = 0;
@@ -822,11 +817,14 @@ public class Globals {
 		
 		
 		shapes[id].setNumFrames(index);
-		mmr.release();
+		//mmr.release();
 		
 	}
 	
 	private static Bitmap cropFrameToShpae(int stage_id, Bitmap frame) {
+
+		Log.d("Debug", "On Enter - Frame is "+frame);
+		if(frame != null) Log.d("Debug", "On Enter - Recycled? "+frame.isRecycled());
 
 		//get the pixels from the current screen
 		Bitmap  bitmap = Bitmap.createBitmap(Globals.preview_size.x, Globals.preview_size.y, Bitmap.Config.ARGB_8888);
@@ -879,6 +877,9 @@ public class Globals {
 	   c.drawColor(Color.TRANSPARENT);
 	   if(!custom) c.clipPath(path);
 	   else c.clipPath(custom_path);
+	   
+		Log.d("Debug", "On Draw - Frame is "+frame);
+		if(frame != null) Log.d("Debug", "On Draw - Recycled? "+frame.isRecycled());
 	   c.drawBitmap(frame, null,new Rect(0, 0, Globals.preview_size.x, Globals.preview_size.y), null);			
 				
 		try{
