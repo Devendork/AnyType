@@ -2,41 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="horizontal" android:background="#ffffff" android:filterTouchesWhenObscured="false" android:gravity="center" android:layout_gravity="center">
+    android:layout_gravity="center"
+    android:background="#ffffff"
+    android:filterTouchesWhenObscured="false"
+    android:gravity="left|center_vertical"
+    android:orientation="vertical" >
 
-
-
-    <ImageView
-        android:id="@+id/ImageView01"
+    <TextView
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/anytype_home" />
-
-    
-    
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:gravity="left|center_vertical"
-        android:orientation="vertical" >
-
-        <ImageView
-            android:id="@+id/ImageView02"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="240dp"
-            android:layout_weight="0.20"
-            android:src="@drawable/anytype_contact" />
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical|center_horizontal|center"
-            android:orientation="vertical" >
-
-    
+        android:text="AnyType"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/black_overlay" />
             
             <LinearLayout
             android:layout_width="wrap_content"
@@ -54,29 +32,29 @@
             
             </LinearLayout>
 
-            <LinearLayout
+            <!--  <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|left"
             android:orientation="horizontal" >
 
-                <TextView
+               <TextView
                     android:id="@+id/text_fps"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Frames per Second" />
+                    android:text="Frames per Second" /> 
           
-                    <EditText
+                   <EditText
                 android:id="@+id/edit_text_fps"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="number" 
-                android:text="5">
+                android:text="5"> 
                 
             </EditText>
 
-           </LinearLayout>
+           </LinearLayout> -->
             
            <LinearLayout
             android:layout_width="wrap_content"
@@ -103,13 +81,13 @@
                 android:text="Edit Font" />
             
             
-             <Button
+             <!-- <Button
                 android:id="@+id/button_rebuild"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Rebuild Letters" />
+                android:text="Rebuild Letters" /> -->
+             
         </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
+  
 
 </LinearLayout>

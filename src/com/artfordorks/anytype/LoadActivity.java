@@ -43,6 +43,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -50,6 +51,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -71,8 +73,28 @@ public class LoadActivity extends Activity {
 									// capturing
 	
 	private double beginTime = System.currentTimeMillis();
-	private EditText fps_input;
-	private TextView fps_label;
+//	private EditText fps_input;
+//	private TextView fps_label;
+	
+	
+	public void cleanUpShapes(){
+		Rect[] skews = new Rect[Globals.shapes.length];
+		Letter l;
+		Shape s;
+		int[] shapes, x, y;
+		int correct_x,correct_y;
+		
+		//make a list of all of the offsets of the points
+		for(int i = 0; i < Globals.shapes.length; i++){
+			Rect r = Globals.shapes[i].getBounds();
+			skews[i] = r;
+		    correct_x = -1*r.left;
+			correct_y = -1*r.top;
+			Globals.shapes[i].offset(correct_x, correct_y);
+		}
+		
+	}
+
 	
 	public void loadShapes() {
 		int ndx = 0;
@@ -248,23 +270,11 @@ public class LoadActivity extends Activity {
 
 	}
 	
-	public void cleanUpShapes(){
-		Rect[] skews = new Rect[Globals.shapes.length];
-		Letter l;
-		Shape s;
-		int[] shapes, x, y;
-		int correct_x,correct_y;
-		
-		//make a list of all of the offsets of the points
-		for(int i = 0; i < Globals.shapes.length; i++){
-			Rect r = Globals.shapes[i].getBounds();
-			skews[i] = r;
-		    correct_x = -1*r.left;
-			correct_y = -1*r.top;
-			Globals.shapes[i].offset(correct_x, correct_y);
-		}
+	public void setScreenData(){
 		
 	}
+	
+
 
 	/** Called when the activity is first created. */
 	@Override
@@ -272,13 +282,12 @@ public class LoadActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		Point size = new Point(getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
+		
 
-		environment = new Globals(size, getResources().getDisplayMetrics().density, this);
+		environment = new Globals(this);
 	
 		Globals.edit = false;
 			
-
 		loadShapes();
 		loadLetters();
 		cleanUpShapes();
@@ -318,25 +327,25 @@ public class LoadActivity extends Activity {
 			}
 		});
 		
-		Button button_rebuild = (Button) findViewById(id.button_rebuild);
-		button_rebuild.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				 Globals.rebuild = true;
-				loadExistingFont();
-
-			}
-		});
-		
-		fps_input = (EditText) findViewById(id.edit_text_fps);
-		fps_input.setText(String.valueOf(Globals.frames_per_second));
-		fps_input.setTextColor(Color.BLACK);
-		fps_label = (TextView) findViewById(id.text_fps);
-		
+//		Button button_rebuild = (Button) findViewById(id.button_rebuild);
+//		button_rebuild.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				 Globals.rebuild = true;
+//				loadExistingFont();
+//
+//			}
+//		});
+//		
+//		fps_input = (EditText) findViewById(id.edit_text_fps);
+//		fps_input.setText(String.valueOf(Globals.frames_per_second));
+//		fps_input.setTextColor(Color.BLACK);
+//		fps_label = (TextView) findViewById(id.text_fps);
+//		
 		
 		if(!Globals.using_video){
-			fps_input.setVisibility(View.INVISIBLE);
-			fps_label.setVisibility(View.INVISIBLE);
+			//fps_input.setVisibility(View.INVISIBLE);
+			//fps_label.setVisibility(View.INVISIBLE);
 		}
 		
 		Switch video_switch = (Switch) findViewById(id.video_toggle);
@@ -347,27 +356,27 @@ public class LoadActivity extends Activity {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				Globals.using_video = isChecked;
 				if(isChecked){
-					fps_input.setVisibility(View.VISIBLE);
-					fps_label.setVisibility(View.VISIBLE);
+					//fps_input.setVisibility(View.VISIBLE);
+					//fps_label.setVisibility(View.VISIBLE);
 				}else{
-					fps_input.setVisibility(View.INVISIBLE);
-					fps_label.setVisibility(View.INVISIBLE);
+					//fps_input.setVisibility(View.INVISIBLE);
+					//fps_label.setVisibility(View.INVISIBLE);
 				}
 			}
 		});
 		
 		
-		fps_input.addTextChangedListener(new TextWatcher(){
-	        public void afterTextChanged(Editable s) {
-	        	String temp = s.toString();
-	        	temp = temp.trim();
-	        	if(temp.length() == 0) Globals.frames_per_second = 0;
-	        	else Globals.frames_per_second = Integer.parseInt(s.toString());
-	           
-	        }
-	        public void beforeTextChanged(CharSequence s, int start, int count, int after){}
-	        public void onTextChanged(CharSequence s, int start, int before, int count){}
-	    }); 
+//		fps_input.addTextChangedListener(new TextWatcher(){
+//	        public void afterTextChanged(Editable s) {
+//	        	String temp = s.toString();
+//	        	temp = temp.trim();
+//	        	if(temp.length() == 0) Globals.frames_per_second = 0;
+//	        	else Globals.frames_per_second = Integer.parseInt(s.toString());
+//	           
+//	        }
+//	        public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+//	        public void onTextChanged(CharSequence s, int start, int before, int count){}
+//	    }); 
 
 		
 

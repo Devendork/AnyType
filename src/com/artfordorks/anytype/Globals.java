@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -48,6 +49,7 @@ import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
 import android.media.MediaMetadataRetriever;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ProgressBar;
 
@@ -70,7 +72,9 @@ public class Globals {
 	static boolean[] existing_letters;
 	static int stage;
 	public static float shapeStretch;
+	
 	//public static float shapeShrink = 0.5f; //used to make video bitmaps smaller
+	
 	public static int letter_size = 600;
 	static int grab_num = 0;
 	static String base_dir_name;
@@ -90,8 +94,7 @@ public class Globals {
 	static Point screen_size;
 	static Point picture_size = new Point();
 	public static Point preview_size = new Point();
-	static double aspect_ratio;
-	static float screen_density;
+	
 	
 	static boolean rebuild = false;
 	
@@ -120,12 +123,19 @@ public class Globals {
 	///FOR THREADING TO UI
 	static ThreadProgressView progress = null;
 	static int builder_threads = 0;
+	
+	//FOR VARIABLE SCREEN DATA
+	static DisplayMetrics metrics;
+	static double aspect_ratio; //this is set on camera load
+	static double screen_density;
+	
+	
+	public Globals(Context context) {
 
-	
-	
-	public Globals(Point screen, float density, Context context) {
-		screen_size = new Point(screen);
-		screen_density = density; //pixels per 1 pixel
+		metrics = new DisplayMetrics();
+		((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		screen_size = new Point(metrics.widthPixels, metrics.heightPixels);
+		screen_density = metrics.density;
 		
 		//lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE); 
 
@@ -205,16 +215,13 @@ public class Globals {
 			//set the preview size to be wholly contained in the view
 			List<Size> preview_sizes = parameters.getSupportedPreviewSizes();
 			Iterator it = preview_sizes.iterator();
-			Log.d("Tap", "Density: "+density);
-			Log.d("Tap", "Screen Size: "+screen_size.x*density+" "+screen_size.y*density);
 
 			
 	    	while(it.hasNext()){
 	    		Size s = (Size) it.next();
-				Log.d("Tap", "Preview Size: "+s.width+" "+s.height);
 				
 				//get the biggest preview size that fits in this window
-	    		if(s.width <= screen_size.x*density && s.height <= screen_size.y*density){
+	    		if(s.width <= screen_size.x && s.height <= screen_size.y){
 	    			if(s.width > preview_size.x || s.height > preview_size.y) preview_size.set(s.width, s.height);			
 	    		}
 	    	}
@@ -254,6 +261,7 @@ public class Globals {
 	
 
 	
+
 	public static boolean createNewDirectory(String time){
 		timeStamp =time;
 		mediaStorageDir = new File(
